@@ -28,12 +28,12 @@ export const MISSION_TEMPLATES: MissionTemplate[] = [
 
 const tpl = (id: string) => MISSION_TEMPLATES.find((t) => t.id === id)!
 
-const DAILY_ROTATION = [
+export const DAILY_ROTATION = [
   ['d_lessons2', 'd_revise1', 'd_correct15'],
   ['d_lessons2', 'd_perfect1', 'd_revise1'],
   ['d_lessons2', 'd_correct15', 'd_perfect1'],
 ]
-const WEEKLY_ROTATION = [
+export const WEEKLY_ROTATION = [
   ['w_lessons8', 'w_goal5', 'w_revise4'],
   ['w_lessons8', 'w_goal5', 'w_checkpoint1'],
 ]
