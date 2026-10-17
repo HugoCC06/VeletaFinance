@@ -1,0 +1,162 @@
+/* Veleta design tokens. Every colour, size and timing used by components lives here. */
+:root {
+  color-scheme: light;
+
+  /* Brand palette */
+  --violet-50: #f6f4ff;
+  --violet-100: #ece8ff;
+  --violet-200: #d9d1ff;
+  --violet-400: #8b73ff;
+  --violet-500: #6b4eff;
+  --violet-600: #5536e8;
+  --violet-700: #4226c4;
+  --violet-800: #2f1a91;
+  --mint-50: #ecfbf5;
+  --mint-100: #d4f6e8;
+  --mint-400: #3fd8a2;
+  --mint-500: #1fc48e;
+  --mint-600: #12a375;
+  --mint-700: #0b7a57;
+  --sun-50: #fff9e8;
+  --sun-100: #fff1c7;
+  --sun-400: #ffc83d;
+  --sun-500: #f5b01b;
+  --sun-700: #8a5a00;
+  --coral-50: #fff1f1;
+  --coral-100: #ffe1e2;
+  --coral-400: #ff7d81;
+  --coral-500: #ff5a5f;
+  --coral-600: #e0444a;
+  --coral-700: #b42b31;
+  --sky-50: #eef6ff;
+  --sky-100: #dbecff;
+  --sky-500: #2e9bff;
+  --sky-600: #1a7fe0;
+  --sky-700: #0f5ea8;
+  --ink-900: #1d1a35;
+  --ink-800: #2c2948;
+  --ink-700: #3d3a58;
+  --ink-600: #55526f;
+  --ink-500: #67648a;
+  --ink-400: #9592b0;
+  --ink-300: #c4c2d8;
+  --ink-200: #e2e0ee;
+  --ink-100: #efeef6;
+  --ink-50: #f8f7fd;
+  --white: #ffffff;
+
+  /* Semantic colours */
+  --bg: var(--ink-50);
+  --surface: var(--white);
+  --surface-raised: var(--white);
+  --text: var(--ink-900);
+  --text-muted: var(--ink-600);
+  --text-subtle: var(--ink-500);
+  --border: var(--ink-200);
+  --border-strong: var(--ink-300);
+  --primary: var(--violet-500);
+  --primary-strong: var(--violet-700);
+  --primary-text: var(--violet-600);
+  --primary-soft: var(--violet-100);
+  --success: var(--mint-500);
+  --success-strong: var(--mint-700);
+  --success-soft: var(--mint-100);
+  --danger: var(--coral-500);
+  --danger-strong: var(--coral-700);
+  --danger-soft: var(--coral-100);
+  --warning: var(--sun-500);
+  --warning-strong: var(--sun-700);
+  --warning-soft: var(--sun-100);
+  --info: var(--sky-500);
+  --info-strong: var(--sky-700);
+  --info-soft: var(--sky-100);
+  --xp: var(--sun-400);
+  --streak: #ff8a3d;
+  --focus: #1a7fe0;
+
+  /* Typography */
+  --font-display: 'Baloo 2', 'Nunito Variable', system-ui, sans-serif;
+  --font-body: 'Nunito Variable', 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-md: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.875rem;
+  --text-3xl: 2.375rem;
+  --text-4xl: clamp(2.25rem, 1.6rem + 3vw, 3.75rem);
+  --leading-tight: 1.15;
+  --leading-normal: 1.55;
+  --weight-regular: 500;
+  --weight-semibold: 700;
+  --weight-bold: 800;
+
+  /* Spacing (4px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Shadows: soft elevation + chunky "pressable" ledge */
+  --shadow-sm: 0 1px 2px rgba(29, 26, 53, 0.06), 0 1px 3px rgba(29, 26, 53, 0.06);
+  --shadow-md: 0 4px 14px rgba(29, 26, 53, 0.08);
+  --shadow-lg: 0 18px 40px rgba(29, 26, 53, 0.14);
+  --ledge: 0 4px 0;
+
+  /* Buttons */
+  --button-height: 48px;
+  --button-height-sm: 38px;
+  --button-radius: var(--radius-md);
+
+  /* Cards */
+  --card-padding: var(--space-6);
+  --card-radius: var(--radius-lg);
+  --card-border: 2px solid var(--border);
+
+  /* Progress */
+  --progress-height: 14px;
+  --progress-track: var(--ink-100);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 420ms;
+
+  /* Layout */
+  --sidebar-width: 248px;
+  --content-max: 1080px;
+  --reading-max: 680px;
+  --header-height: 64px;
+  --bottom-nav-height: 68px;
+}
+
+/* Breakpoints (used in media queries; CSS custom properties can't be used there):
+   --bp-sm: 600px  (large phones)
+   --bp-md: 900px  (tablets; sidebar appears)
+   --bp-lg: 1200px (desktop) */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
+}

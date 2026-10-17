@@ -135,7 +135,7 @@ export const LINE_DATASETS: LineDataset[] = [
     limitations: 'Synthetic. Use it to compare volatility and drawdowns, not to infer anything about real companies.',
     series: [
       { id: 'steady', label: 'Steady Co (synthetic)', tone: 'mint', points: randomWalk(21, 120, 10, 0.006, 0.03).map(([i, v]) => [round2(i / 12), v]) },
-      { id: 'volatile', label: 'Rollercoaster Co (synthetic)', tone: 'coral', points: randomWalk(37, 120, 10, 0.0075, 0.11).map(([i, v]) => [round2(i / 12), v]) },
+      { id: 'volatile', label: 'Rollercoaster Co (synthetic)', tone: 'coral', points: randomWalk(48, 120, 10, 0.0075, 0.09).map(([i, v]) => [round2(i / 12), v]) },
     ],
   },
   {

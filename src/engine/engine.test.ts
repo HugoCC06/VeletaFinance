@@ -140,6 +140,7 @@ describe('mastery', () => {
     expect(q.map((p) => p.questionId)).toEqual(['b', 'a', 'c'])
     expect(q[0].reason).toBe('missed')
     expect(q[2].reason).toBe('practice')
+    expect(buildRevisionQueue(stats, today, 10).map((p) => p.questionId)).toEqual(['b', 'a', 'c', 'd'])
   })
 })
 

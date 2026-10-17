@@ -78,7 +78,9 @@ export interface RevisionPick {
 /**
  * Builds a revision session. Missed questions (box 0) come first, then due
  * questions with the lowest box, then — if the queue is short — practice
- * questions with the weakest boxes that were not already answered today.
+ * questions with the weakest boxes that were not already answered today, and
+ * finally (so "practise anyway" is never empty) the weakest questions answered
+ * earlier today — those still cannot be promoted twice in one day.
  */
 export function buildRevisionQueue(stats: QuestionStat[], today: Day, size = 8, allowedIds?: Set<string>): RevisionPick[] {
   const pool = allowedIds ? stats.filter((s) => allowedIds.has(s.questionId)) : stats
@@ -93,6 +95,14 @@ export function buildRevisionQueue(stats: QuestionStat[], today: Day, size = 8, 
       .sort((a, b) => a.box - b.box || a.dueDay.localeCompare(b.dueDay) || a.questionId.localeCompare(b.questionId))
       .slice(0, size - picks.length)
     picks.push(...extra.map((s) => ({ questionId: s.questionId, reason: 'practice' as const })))
+  }
+  if (picks.length < size) {
+    const taken = new Set(picks.map((p) => p.questionId))
+    const rest = pool
+      .filter((s) => !taken.has(s.questionId))
+      .sort((a, b) => a.box - b.box || a.correct / a.attempts - b.correct / b.attempts || a.questionId.localeCompare(b.questionId))
+      .slice(0, size - picks.length)
+    picks.push(...rest.map((s) => ({ questionId: s.questionId, reason: 'practice' as const })))
   }
   return picks
 }
