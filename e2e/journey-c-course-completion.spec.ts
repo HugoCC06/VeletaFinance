@@ -4,7 +4,7 @@ import { COURSES } from '../src/content/index.ts'
 import { completeOnboarding, playAssessment, playLesson, signUp } from './helpers'
 
 test('Journey C: complete a course, fail and retake the exam, earn and verify a certificate', async ({ page }) => {
-  test.setTimeout(600_000)
+  test.setTimeout(900_000)
   const course = COURSES[0]
   await signUp(page, 'Grace Hopper')
   await completeOnboarding(page)

@@ -21,8 +21,13 @@ import { formatPercent } from '../../lib/format'
 
 type Phase = 'intro' | 'answering' | 'review' | 'submitting' | 'result' | 'offline' | 'error'
 
+/** Remount per assessment so moving between assessments never reuses stale state. */
 export function AssessmentPage() {
   const { assessmentId = '' } = useParams()
+  return <AssessmentView key={assessmentId} assessmentId={assessmentId} />
+}
+
+function AssessmentView({ assessmentId }: { assessmentId: string }) {
   const ref = getAssessment(assessmentId)
   const { backend, state, user, refresh } = useApp()
   const navigate = useNavigate()

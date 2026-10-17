@@ -19,6 +19,11 @@ import { uuid } from '../../lib/storage'
 import { useMeta } from '../../lib/useMeta'
 
 export function PracticeSession() {
+  const [params] = useSearchParams()
+  return <PracticeView key={params.toString()} />
+}
+
+function PracticeView() {
   useMeta('Revision session', { noindex: true })
   const { backend, state, user, refresh } = useApp()
   const [params] = useSearchParams()

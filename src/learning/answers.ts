@@ -54,7 +54,8 @@ export function normalise(q: Question, raw: RawAnswer): AnswerValue | null {
 }
 
 export function formatNumeric(q: Extract<Question, { kind: 'numeric' }>, n: number): string {
-  const digits = Number.isInteger(n) ? 0 : Math.min(2, (String(n).split('.')[1] ?? '').length)
+  const money = q.prefix === '£' || q.prefix === '$' || q.prefix === '€'
+  const digits = Number.isInteger(n) ? 0 : money ? 2 : Math.min(2, (String(n).split('.')[1] ?? '').length)
   const body = formatNumber(n, digits)
   const suffix = q.suffix ? (q.suffix.length <= 2 && !/^[a-z]/i.test(q.suffix) ? q.suffix : ` ${q.suffix}`) : ''
   return `${q.prefix ?? ''}${body}${suffix}`

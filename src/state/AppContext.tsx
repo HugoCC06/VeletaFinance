@@ -65,7 +65,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       const b = await getBackend()
       if (cancelled) return
       setBackend(b)
-      let u: AuthUser | null = null
+      let u: AuthUser | null
       try {
         u = await b.getUser()
       } catch {

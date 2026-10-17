@@ -34,9 +34,9 @@ export function Dashboard() {
   const maxXp = Math.max(20, ...week.map((d) => byDay.get(d)?.xp ?? 0))
   const started = COURSES.filter((c) => c.units.some((u) => u.lessons.some((l) => state.lessons[l.id])))
 
-  let nextTitle = ''
-  let nextHref = ''
-  let nextLabel = 'Start'
+  let nextTitle: string
+  let nextHref: string
+  let nextLabel: string
   if (step.type === 'lesson') { nextTitle = step.lesson.title; nextHref = `/app/lesson/${step.lesson.id}`; nextLabel = state.lessons[step.lesson.id] ? 'Review' : 'Start lesson' }
   else if (step.type === 'checkpoint') { nextTitle = `Checkpoint: ${step.unit.title}`; nextHref = `/app/assessment/${step.unit.checkpoint.id}`; nextLabel = 'Take checkpoint' }
   else if (step.type === 'exam') { nextTitle = `${course.title}: final exam`; nextHref = `/app/assessment/${course.exam.id}`; nextLabel = 'Take final exam' }

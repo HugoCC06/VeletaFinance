@@ -29,24 +29,26 @@ interface NodeProps {
   open: boolean
   onToggle: () => void
   offset: number
+  variant?: 'lesson' | 'checkpoint' | 'exam'
 }
 
-function PathNode({ id, state, isNext, icon, title, kindLabel, detail, href, action, review, open, onToggle, offset }: NodeProps) {
+function PathNode({ id, state, isNext, icon, title, kindLabel, detail, href, action, review, open, onToggle, offset, variant = 'lesson' }: NodeProps) {
   const statusText = state === 'completed' ? 'completed' : state === 'locked' ? 'locked' : isNext ? 'up next' : 'available'
   return (
     <li className="path-node" style={{ ['--offset' as string]: `${offset}px` }}>
       <button
         type="button"
-        className={`path-node__btn is-${state}${isNext ? ' is-next' : ''}`}
+        className={`path-node__btn is-${state}${isNext ? ' is-next' : ''} path-node__btn--${variant}`}
         aria-expanded={open}
         aria-controls={`pop-${id}`}
         onClick={onToggle}
         aria-label={`${kindLabel}: ${title} — ${statusText}${review ? `, ${review} questions due for review` : ''}`}
       >
-        <Icon name={state === 'completed' ? 'check' : state === 'locked' ? 'lock' : icon} size={30} strokeWidth={2.6} />
+        <Icon name={state === 'completed' ? 'check' : state === 'locked' && variant === 'lesson' ? 'lock' : icon} size={30} strokeWidth={2.6} />
         {isNext && <span className="path-node__start" aria-hidden="true">Start</span>}
         {review ? <span className="path-node__review" aria-hidden="true"><Icon name="refresh" size={12} />{review}</span> : null}
       </button>
+      {variant !== 'lesson' && <span className="path-node__caption" aria-hidden="true">{variant === 'exam' ? 'Final exam' : 'Checkpoint'}</span>}
       {open && (
         <div className="path-pop card" id={`pop-${id}`} role="region" aria-label={title}>
           <span className="eyebrow">{kindLabel}</span>
@@ -131,6 +133,7 @@ export function Learn() {
             state={cpState}
             isNext={next.type === 'checkpoint' && next.unit.id === u.id}
             icon="flag"
+            variant="checkpoint"
             title={u.checkpoint.title}
             kindLabel="Unit checkpoint"
             detail={`${u.checkpoint.questions.length} questions · pass ${Math.round(u.checkpoint.passMark * 100)}%${cpRecord ? ` · best ${formatPercent(cpRecord.bestScore, 0)} in ${cpRecord.attempts} attempt${cpRecord.attempts === 1 ? '' : 's'}` : ` · ${XP.checkpointPass} XP`}`}
@@ -180,6 +183,7 @@ export function Learn() {
             state={exState}
             isNext={next.type === 'exam'}
             icon="trophy"
+            variant="exam"
             title="Final exam"
             kindLabel="Course assessment"
             detail={`${course.exam.questions.length} questions · pass ${Math.round(course.passMark * 100)}% · earns your certificate${exRecord ? ` · best ${formatPercent(exRecord.bestScore, 0)}` : ` · ${XP.examPass} XP`}`}

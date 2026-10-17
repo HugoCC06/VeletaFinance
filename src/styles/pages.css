@@ -129,7 +129,7 @@
 .path-unit__banner--coral { background: linear-gradient(135deg, var(--coral-600), var(--coral-700)); }
 .path-unit__eyebrow { font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.9; }
 .path-unit__stats { display: flex; flex-direction: column; gap: 4px; font-size: var(--text-sm); font-weight: 700; align-items: flex-end; justify-content: center; }
-.path { list-style: none; padding: var(--space-8) 0 var(--space-4); margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-6); }
+.path { list-style: none; padding: var(--space-10) 0 var(--space-4); margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-8); }
 .path-node { position: relative; transform: translateX(var(--offset, 0)); display: flex; flex-direction: column; align-items: center; margin: 0; }
 @media (max-width: 480px) { .path-node { transform: translateX(calc(var(--offset, 0) * 0.55)); } }
 .path-node__btn { position: relative; width: 76px; height: 70px; border-radius: 50%; border: 0; display: grid; place-items: center; cursor: pointer; color: var(--white); background: var(--violet-500); box-shadow: 0 7px 0 var(--violet-700); transition: transform var(--duration-fast); }
@@ -231,3 +231,9 @@ input[type='range'] { accent-color: var(--violet-500); width: 100%; min-height: 
 .range-row { display: grid; grid-template-columns: 1fr; gap: 4px var(--space-4); align-items: center; }
 @media (min-width: 700px) { .range-row { grid-template-columns: auto 1fr auto 1fr; } }
 details summary { cursor: pointer; }
+.path-node__btn--checkpoint, .path-node__btn--exam { border-radius: 24px; width: 84px; }
+.path-node__btn--exam:not(.is-locked) { background: var(--sun-400); color: #3d2800; box-shadow: 0 7px 0 var(--sun-500); }
+.path-node__btn--exam.is-completed { background: var(--mint-500); color: var(--white); box-shadow: 0 7px 0 var(--mint-700); }
+.path-node__caption { margin-top: 10px; font-size: var(--text-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-500); }
+.mission-list .spread { flex-wrap: nowrap; align-items: flex-start; }
+.week-bars__bar span[style*="height: 0%"] { display: none; }
