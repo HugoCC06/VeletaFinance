@@ -1,33 +1,25 @@
-name: Test and deploy to GitHub Pages
+name: Build and deploy to GitHub Pages
 
+# The site must be BUILT before it is served: GitHub Pages "Deploy from a branch"
+# would serve the raw source index.html (a blank page). Set
+# Settings → Pages → Source to "GitHub Actions" so this workflow deploys dist/.
 on:
   push:
-    branches: [main]
-  pull_request:
+    branches: [main, 'claude/**']
   workflow_dispatch:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages
   cancel-in-progress: true
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
-    env:
-      PGHOST: localhost
-      PGUSER: postgres
-      PGPASSWORD: postgres
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -36,41 +28,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - run: npm run lint
       - run: npm test
-      - run: npm run content:check
-      - name: SQL tests (schema, RLS, trusted functions)
-        run: npm run test:sql
-      - name: Install Playwright Chromium
-        run: npx playwright install --with-deps chromium
-      - name: End-to-end tests
-        run: npm run test:e2e
-      - uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-report
-          path: playwright-report
-          retention-days: 7
-
-  build:
-    needs: test
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
       - id: pages
         uses: actions/configure-pages@v5
       - name: Build
         run: npm run build
         env:
-          # Public values only. Configure these as repository *variables*
-          # (Settings → Secrets and variables → Actions → Variables).
-          # Leave the Supabase ones empty to deploy in demo mode.
+          # Public values only — set as repository *variables*. Empty Supabase values = demo mode.
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
           VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH || format('{0}/', steps.pages.outputs.base_path) }}
@@ -82,9 +46,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

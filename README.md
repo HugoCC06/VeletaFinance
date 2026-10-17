@@ -137,12 +137,14 @@ npm run test:e2e       # Playwright journeys against the production build (demo 
 
 ## Deployment to GitHub Pages
 
-The workflow `.github/workflows/deploy.yml` runs type checks, lint, unit, SQL and end-to-end tests, builds, and deploys `dist/` with the official Pages actions.
+`.github/workflows/deploy.yml` type-checks, runs the unit tests, builds and deploys `dist/` with the official Pages actions. `.github/workflows/checks.yml` runs lint, SQL and end-to-end tests separately so a slow test can't block a deploy.
+
+> **Important:** don't use “Deploy from a branch”. That serves the unbuilt source `index.html`, which shows a blank white page. The site must be built by the workflow.
 
 1. Repository → Settings → Pages → **Source: GitHub Actions**.
 2. (Optional, for online mode) add repository variables `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 3. (Custom domain only) set `VITE_BASE_PATH=/` and `VITE_SITE_URL=https://your.domain/`, and configure the domain in Pages settings.
-4. Push to `main` (or run the workflow manually).
+4. Push to `main` or a `claude/**` branch, or run “Build and deploy to GitHub Pages” manually from the Actions tab.
 
 Base path and site URL default to what `actions/configure-pages` reports, so the repository name is not hard-coded anywhere except the fallback in `site.config.ts`. A full checklist is in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
@@ -181,7 +183,8 @@ docs/             architecture, backend, rules, content, data, deployment
 
 | Problem | Fix |
 |---|---|
-| Blank page / 404 for assets on Pages | `VITE_BASE_PATH` must match the URL path (`/<repo>/` for project sites, `/` for custom domains). |
+| Blank white page on Pages | Pages is set to “Deploy from a branch”. Switch Settings → Pages → Source to **GitHub Actions** and re-run the deploy workflow. |
+| 404 for assets on Pages | `VITE_BASE_PATH` must match the URL path (`/<repo>/` for project sites, `/` for custom domains). |
 | “Demo mode” banner in production | The build didn’t see `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY`. Add them as repository *variables* and redeploy. |
 | Confirmation/reset links go to the wrong place | Check Supabase Auth Site URL and Redirect URLs include the exact deployed URL with trailing slash. |
 | `permission denied` / `42501` from the API | Migrations not fully applied, or applied out of order. Re-run them in filename order. |
