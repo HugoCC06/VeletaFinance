@@ -57,6 +57,9 @@ export interface Source {
   note?: string
 }
 
+/** Lesson material a question can carry with it. */
+export type QuestionContext = Extract<Step, { kind: 'diagram' | 'numbers' | 'callout' | 'text' }>
+
 export type CalloutVariant = 'key' | 'example' | 'warning' | 'ukus' | 'analogy'
 
 export type Step =
@@ -89,6 +92,8 @@ interface QuestionBase {
   prompt: string
   /** Optional scenario text shown above the prompt (scenario/case-study questions). */
   scenario?: string
+  /** A table, chart or example the question depends on, shown with the question so it stands on its own. */
+  context?: QuestionContext
   explanation: string
   /** Concept tag for mastery; defaults to the lesson's first tag. */
   concept: string

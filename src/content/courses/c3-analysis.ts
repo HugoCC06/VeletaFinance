@@ -74,7 +74,7 @@ const incomeStatement = lesson(
       ['Net income', '67.5'],
     ], BRIGHTCUP),
     num('q1', 'A company has revenue of £800m and cost of goods sold of £500m. What is its gross profit in £m?', 300, 'Gross profit = revenue − COGS = £800m − £500m = £300m.', { prefix: '£', suffix: 'm' }),
-    num('q2', 'The same company has operating expenses of £180m. What is its operating profit in £m?', 120, 'Operating profit = gross profit − operating expenses = £300m − £180m = £120m.', { prefix: '£', suffix: 'm' }),
+    num('q2', 'A company has revenue of £800m, cost of goods sold of £500m (so gross profit is £300m) and operating expenses of £180m. What is its operating profit in £m?', 120, 'Operating profit = gross profit − operating expenses = £300m − £180m = £120m.', { prefix: '£', suffix: 'm' }),
     order('q3', 'Order these lines as they appear from top to bottom.', ['Revenue', 'Gross profit', 'Operating profit', 'Profit before tax', 'Net income'], 'Each line subtracts another layer of cost: COGS, operating expenses, then interest, then tax.'),
     ukus('Same thing, different names', 'UK reports often say *turnover* for revenue and *profit for the year* for net income. US reports say *net sales* or *revenue* and *net income*. UK listed groups report under IFRS; US companies under US GAAP — similar ideas, some different rules.'),
     mcq('q4', 'Which profit figure best shows how profitable the core business operations are, before financing choices and tax?', ['Revenue', 'Gross profit', 'Operating profit', 'Net income'], 2, 'Operating profit includes all operating costs but excludes interest (a financing choice) and tax, so it isolates the operating business.', { final: true }),
@@ -272,7 +272,7 @@ export const c3 = course({
         questions: [
           mcqQ('c1', 'A gym charging monthly membership fees uses mainly which model?', ['Advertising', 'Subscription', 'Licensing', 'Commodity'], 1, 'Recurring monthly fees are a subscription model.', { concept: 'business-model' }),
           numQ('c2', 'Revenue £250m, COGS £150m, operating expenses £60m. What is operating profit in £m?', 40, '£250m − £150m − £60m = £40m.', { prefix: '£', suffix: 'm', concept: 'income-statement' }),
-          numQ('c3', 'What is the operating margin in the previous question?', 16, '£40m ÷ £250m = 16%.', { suffix: '%', tolerance: 0.05, concept: 'margins' }),
+          numQ('c3', 'Revenue is £250m and operating profit is £40m. What is the operating margin?', 16, '£40m ÷ £250m = 16%.', { suffix: '%', tolerance: 0.05, concept: 'margins' }),
           tfQ('c4', 'Net income is calculated before interest and tax.', false, 'Net income is after interest and tax.', { concept: 'income-statement' }),
           mcqQ('c5', 'What is the best way to judge whether a 5% net margin is good?', ['Compare with any random company', 'Compare with the company’s history and close competitors', 'Compare with the interest rate', 'Margins cannot be judged'], 1, 'Industry economics drive margins.', { concept: 'margins' }),
           orderQ('c6', 'Order from largest to smallest for a typical profitable company.', ['Revenue', 'Gross profit', 'Operating profit', 'Net income'], 'Each step subtracts costs.', { concept: 'income-statement' }),

@@ -14,12 +14,13 @@ import type {
   NumericQuestion,
   OrderQuestion,
   Question,
+  QuestionContext,
   Source,
   Step,
   Unit,
 } from './types'
 
-type Extra = { scenario?: string; concept?: string; final?: boolean }
+type Extra = { scenario?: string; concept?: string; final?: boolean; context?: QuestionContext }
 /** A question before its id is namespaced and its concept defaulted. */
 export type DraftQuestion = Omit<Question, 'concept'> & { concept?: string }
 type DraftStep = Exclude<Step, { kind: 'question' }> | { kind: 'question'; question: DraftQuestion }
@@ -75,6 +76,23 @@ function finishQuestion(prefix: string, defaultConcept: string, d: DraftQuestion
   return { ...d, id: `${prefix}.${d.id}`, concept: d.concept ?? defaultConcept } as Question
 }
 
+/** Wording that means a question depends on lesson material shown earlier. */
+export const REFERS_TO_MATERIAL = /(\b(table|chart|diagram|order book|example|payslip|case|figures|data|ask|(fund|portfolio|company) \w+) above\b|\b(using|in|from|based on) the (table|chart|diagram|order book|example|payslip|case|figures|data)\b)/i
+
+/**
+ * Lessons show one step at a time, and questions also reappear in revision
+ * without their lesson. A lesson question that refers to a table, chart or
+ * example therefore carries the nearest earlier one with it.
+ */
+function withContext(q: DraftQuestion, before: DraftStep[]): DraftQuestion {
+  if (q.context || !REFERS_TO_MATERIAL.test(`${q.scenario ?? ''} ${q.prompt}`)) return q
+  for (let i = before.length - 1; i >= 0; i--) {
+    const s = before[i]
+    if (s.kind === 'diagram' || s.kind === 'numbers' || (s.kind === 'callout' && s.variant === 'example')) return { ...q, context: s }
+  }
+  return q
+}
+
 export interface LessonMeta {
   title: string
   description: string
@@ -99,7 +117,7 @@ export function lesson(meta: LessonMeta, steps: DraftStep[]): LessonFactory {
     objectives: meta.objectives,
     tags: meta.tags,
     sources: meta.sources,
-    steps: steps.map((s) => (s.kind === 'question' ? { kind: 'question', question: finishQuestion(id, meta.tags[0], s.question) } : s)),
+    steps: steps.map((s, i) => (s.kind === 'question' ? { kind: 'question', question: finishQuestion(id, meta.tags[0], withContext(s.question, steps.slice(0, i))) } : s)),
   })
 }
 

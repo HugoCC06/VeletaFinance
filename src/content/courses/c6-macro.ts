@@ -194,7 +194,7 @@ const yieldCurve = lesson(
     diagram({ type: 'line', datasetId: 'illus-yield-curves' }, 'Illustrative shapes, not actual market data.', 'Normal and inverted curves'),
     key('Inversion', 'An **inverted** yield curve has short-term yields above long-term yields. It often happens when markets expect central banks to cut rates in future, perhaps because of a slowdown. In the US, inversions have preceded several recessions — but the signal is imperfect and the timing varies.'),
     mcq('q1', 'The 2-year government yield is 4.8% and the 10-year is 4.1%. What shape is this part of the curve?', ['Normal', 'Inverted', 'Flat', 'Impossible'], 1, 'Shorter maturity yielding more than longer maturity is an inversion.'),
-    num('q2', 'What is the 10-year minus 2-year spread in the previous question, in percentage points?', -0.7, '4.1% − 4.8% = −0.7 percentage points.', { suffix: 'pp', tolerance: 0.01 }),
+    num('q2', 'The 2-year yield is 4.8% and the 10-year yield is 4.1%. What is the 10-year minus 2-year spread, in percentage points?', -0.7, '4.1% − 4.8% = −0.7 percentage points.', { suffix: 'pp', tolerance: 0.01 }),
     tf('q3', 'An inverted yield curve guarantees a recession within twelve months.', false, 'False. Inversions have often preceded US recessions, but not with fixed timing, and not every inversion has been followed by one.', { final: true }),
     recap('The yield curve shows yields across maturities.', 'Normal: upward sloping. Inverted: short yields above long yields.', 'Inversions are watched as a warning sign, not a guarantee.'),
   ],

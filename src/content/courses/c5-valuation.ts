@@ -153,7 +153,7 @@ const dcf = lesson(
       ['Terminal value', '12 × 1.02 ÷ (0.10 − 0.02) = 153'],
       ['Enterprise value', '≈ 142.1'],
     ], 'Hypothetical numbers. Notice that the terminal value makes up about 80% of the total.'),
-    mcq('q3', 'In the table above, roughly what share of the value comes from the terminal value?', ['About 10%', 'About 30%', 'About 50%', 'About 80%'], 3, 'The terminal value’s present value is 153 ÷ 1.331 ≈ 115, out of about 142 — roughly 80%. DCFs are often dominated by assumptions about the distant future.', { final: true }),
+    mcq('q3', 'In the table, roughly what share of the value comes from the terminal value?', ['About 10%', 'About 30%', 'About 50%', 'About 80%'], 3, 'The terminal value’s present value is 153 ÷ 1.331 ≈ 115, out of about 142 — roughly 80%. DCFs are often dominated by assumptions about the distant future.', { final: true }),
     recap('A DCF sums the present value of expected future free cash flows.', 'Terminal value = next year’s cash flow ÷ (r − g), with r > g.', 'Terminal values often dominate — so assumptions matter enormously.'),
   ],
 )
@@ -248,7 +248,7 @@ const trapsAndPremiums = lesson(
     multi('q1', 'Which are signs a cheap-looking share could be a value trap? Select all that apply.', ['Revenue shrinking for several years', 'Customers moving to new technology', 'High debt due for refinancing soon', 'Rising free cash flow and market share'], [0, 1, 2], 'Rising FCF and market share point the other way.'),
     key('Justified premiums', 'A high multiple can be reasonable when a company can reinvest at high returns for many years, has a durable competitive advantage and predictable cash flows. The risk is that the premium already assumes a rosy future — leaving little margin for error.'),
     example('A simple case (hypothetical)', 'Company Q trades on 35× earnings. It has grown earnings 20% a year for a decade, earns a 30% ROIC and has high customer retention. Company R trades on 6× earnings; its revenue has fallen 8% a year for five years and it has heavy debt.\n\nQ is not automatically overvalued, and R is not automatically a bargain.'),
-    mcq('q2', 'In the case above, what is the most defensible analytical stance?', ['Buy R: lowest P/E wins', 'Sell Q: high P/E means overvalued', 'Investigate whether Q’s growth can persist and whether R’s decline is priced in', 'Both are equally attractive'], 2, 'Valuation requires comparing expectations embedded in the price with a realistic view of the future.'),
+    mcq('q2', 'In the case, what is the most defensible analytical stance?', ['Buy R: lowest P/E wins', 'Sell Q: high P/E means overvalued', 'Investigate whether Q’s growth can persist and whether R’s decline is priced in', 'Both are equally attractive'], 2, 'Valuation requires comparing expectations embedded in the price with a realistic view of the future.'),
     tf('q3', 'A share with a P/E of 40 can be better value than one with a P/E of 10.', true, 'True — if its future earnings growth and durability are strong enough relative to the price, and the low-P/E company is in decline.', { final: true }),
     recap('Value traps look cheap because the business is deteriorating.', 'High multiples can be justified by durable, high-return growth.', 'Always ask what the price assumes about the future.'),
   ],

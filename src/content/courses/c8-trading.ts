@@ -260,7 +260,7 @@ export const c8 = course({
         questions: [
           mcqQ('c1', 'Swing trading usually holds positions for…', ['seconds', 'days to weeks', 'decades', 'exactly one year'], 1, 'Days to weeks.', { concept: 'trading-basics' }),
           numQ('c2', 'A candle: open 50, high 55, low 48, close 49. What is the range?', 7, '55 − 48 = 7.', { tolerance: 0, concept: 'candlesticks' }),
-          mcqQ('c3', 'That candle is…', ['rising', 'falling', 'flat', 'impossible'], 1, 'Close (49) is below open (50).', { concept: 'candlesticks' }),
+          mcqQ('c3', 'A candle opens at 50 and closes at 49. What kind of candle is it?', ['Rising', 'Falling', 'Flat', 'Impossible'], 1, 'Close (49) is below open (50).', { concept: 'candlesticks' }),
           tfQ('c4', 'Resistance is a level where rises have previously stalled.', true, 'By definition.', { concept: 'support-resistance' }),
           numQ('c5', 'Closes: 20, 22, 24. What is the 3-period SMA?', 22, '66 ÷ 3 = 22.', { tolerance: 0, concept: 'indicators' }),
           numQ('c6', 'Average gain 1, average loss 1. What is the RSI?', 50, 'RS = 1; 100 − 100/2 = 50.', { tolerance: 0.01, concept: 'indicators' }),

@@ -1,3 +1,4 @@
+import { StepView } from './StepView'
 import { useId } from 'react'
 import type { Question } from '../content/types'
 import { seededOrder } from '../engine/grading'
@@ -25,6 +26,7 @@ export function QuestionView({ question: q, value, onChange, reveal = false, onS
   return (
     <div className="question" data-qid={q.id} data-kind={q.kind}>
       {q.final && <span className="pill pill--sun question__badge"><Icon name="star" size={14} />Final challenge</span>}
+      {q.context && <div className="question__context"><StepView step={q.context} /></div>}
       {q.scenario && <div className="question__scenario"><RichText text={q.scenario} /></div>}
       <Heading className="question__prompt" id={promptId}>{q.prompt}</Heading>
       {q.kind === 'multi' && <p className="subtle">Select all that apply.</p>}

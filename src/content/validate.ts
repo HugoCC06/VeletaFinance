@@ -1,5 +1,9 @@
 import type { Course, Question } from './types'
 import { getLineDataset, getOhlcDataset } from '../data/datasets'
+import { REFERS_TO_MATERIAL } from './builders'
+
+/** Wording that points at something the learner may not be able to see. */
+const DEPENDS_ON_ELSEWHERE = /\b(previous question|same figures|same company|that candle)\b/i
 
 /** Returns a list of human-readable problems with the curriculum (empty = valid). */
 export function validateCurriculum(courses: Course[]): string[] {
@@ -14,6 +18,10 @@ export function validateCurriculum(courses: Course[]): string[] {
     if (!q.prompt.trim()) errors.push(`${q.id}: empty prompt`)
     if (q.explanation.trim().length < 8) errors.push(`${q.id}: explanation too short`)
     if (!q.concept) errors.push(`${q.id}: missing concept`)
+    const wording = `${q.scenario ?? ''} ${q.prompt}`
+    if (REFERS_TO_MATERIAL.test(q.prompt) && !q.context) errors.push(`${q.id}: refers to lesson material but carries none (add context)`)
+    if (DEPENDS_ON_ELSEWHERE.test(q.prompt) && !q.scenario) errors.push(`${q.id}: depends on another question; restate the figures in a scenario`)
+    if (q.context && /\babove\b/i.test(wording)) errors.push(`${q.id}: the material is shown with the question, so don’t say “above”`)
     switch (q.kind) {
       case 'mcq':
       case 'tf':
