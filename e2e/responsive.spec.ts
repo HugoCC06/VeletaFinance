@@ -10,7 +10,7 @@ test('mobile: no horizontal overflow and bottom navigation works', async ({ page
   }
   await page.goto('#/')
   await page.getByRole('button', { name: 'Open menu' }).click()
-  await expect(page.getByRole('link', { name: 'Curriculum' })).toBeVisible()
+  await expect(page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Curriculum' })).toBeVisible()
 
   await signUp(page)
   await completeOnboarding(page)

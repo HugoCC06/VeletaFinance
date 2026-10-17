@@ -18,7 +18,7 @@ export function LogoMark({ size = 36, title }: LogoMarkProps) {
 
 export function Logo({ size = 36, compact = false }: { size?: number; compact?: boolean }) {
   return (
-    <span className="logo" aria-label="Veleta Finance">
+    <span className="logo" role="img" aria-label="Veleta Finance">
       <LogoMark size={size} />
       {!compact && (
         <span className="logo__word" aria-hidden="true">

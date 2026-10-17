@@ -31,7 +31,7 @@
 .btn:disabled, .btn[aria-disabled='true'] { cursor: not-allowed; opacity: 0.55; filter: grayscale(0.4); }
 .btn--primary { --btn-bg: var(--violet-500); --btn-fg: var(--white); --btn-ledge: var(--violet-700); --btn-border: var(--violet-500); }
 .btn--success { --btn-bg: var(--mint-500); --btn-fg: #053b2a; --btn-ledge: var(--mint-700); --btn-border: var(--mint-500); }
-.btn--danger { --btn-bg: var(--coral-500); --btn-fg: var(--white); --btn-ledge: var(--coral-700); --btn-border: var(--coral-500); }
+.btn--danger { --btn-bg: var(--coral-700); --btn-fg: var(--white); --btn-ledge: #861d22; --btn-border: var(--coral-700); }
 .btn--sun { --btn-bg: var(--sun-400); --btn-fg: #3d2800; --btn-ledge: var(--sun-500); --btn-border: var(--sun-400); }
 .btn--ghost { --btn-bg: transparent; --btn-fg: var(--primary-text); --btn-ledge: transparent; --btn-border: transparent; box-shadow: none; }
 .btn--ghost:hover { background: var(--primary-soft); }
