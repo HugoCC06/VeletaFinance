@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -42,10 +42,24 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+      # Also publish the built site to the gh-pages branch, so Pages works with
+      # "Deploy from a branch → gh-pages / (root)" as well as "GitHub Actions".
+      - name: Publish built site to gh-pages branch
+        run: |
+          cd dist
+          touch .nojekyll
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Built site from ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" gh-pages
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    # Fails harmlessly if Pages is set to "Deploy from a branch" (gh-pages is used then).
+    continue-on-error: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
