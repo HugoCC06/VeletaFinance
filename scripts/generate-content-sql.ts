@@ -6,7 +6,7 @@
  *   npm run content:sql     # write the file
  *   npm run content:check   # fail if the file is out of date (used in CI)
  */
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { COURSES } from '../src/content/index.ts'
 import { correctAnswer } from '../src/engine/grading.ts'
@@ -83,7 +83,25 @@ upsert('questions', ['id', 'kind', 'lesson_id', 'assessment_id', 'answer', 'tole
 lines.push('commit;', '')
 
 const sql = lines.join('\n')
+
+/** supabase/setup.sql = every migration in order, for one-paste setup in the Supabase SQL editor. */
+const MIGRATIONS = fileURLToPath(new URL('../supabase/migrations/', import.meta.url))
+const SETUP = fileURLToPath(new URL('../supabase/setup.sql', import.meta.url))
+function bundle(seed: string) {
+  const parts = ['-- Veleta Finance: complete database setup (all migrations in order).', '-- Paste this whole file into Supabase → SQL Editor → New query, then press Run. Run it ONCE.', '']
+  for (const f of readdirSync(MIGRATIONS).filter((x) => x.endsWith('.sql')).sort()) {
+    parts.push('', `-- ===== ${f} =====`, f.endsWith('_content_seed.sql') ? seed : readFileSync(MIGRATIONS + f, 'utf8'))
+  }
+  return parts.join('\n')
+}
+
 if (process.argv.includes('--check')) {
+  let setup = ''
+  try { setup = readFileSync(SETUP, 'utf8') } catch { /* missing */ }
+  if (setup !== bundle(sql)) {
+    console.error('supabase/setup.sql is out of date. Run `npm run content:sql` and commit the result.')
+    process.exit(1)
+  }
   let current = ''
   try {
     current = readFileSync(OUT, 'utf8')
@@ -97,5 +115,6 @@ if (process.argv.includes('--check')) {
   console.log(`Content seed is up to date (${qRows.length} questions).`)
 } else {
   writeFileSync(OUT, sql)
+  writeFileSync(SETUP, bundle(sql))
   console.log(`Wrote ${OUT} (${qRows.length} questions).`)
 }
