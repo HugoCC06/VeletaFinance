@@ -191,7 +191,7 @@
 /* ---------- Tabs ---------- */
 .tabs { display: inline-flex; gap: 4px; padding: 4px; background: var(--ink-100); border-radius: var(--radius-pill); max-width: 100%; overflow-x: auto; }
 .tabs button, .tabs a { border: 0; background: transparent; padding: 8px 16px; border-radius: var(--radius-pill); font-weight: var(--weight-bold); color: var(--ink-600); cursor: pointer; text-decoration: none; white-space: nowrap; }
-.tabs [aria-selected='true'], .tabs [aria-current='page'] { background: var(--surface); color: var(--violet-700); box-shadow: var(--shadow-sm); }
+.tabs [aria-selected='true'], .tabs [aria-pressed='true'], .tabs [aria-current='page'] { background: var(--surface); color: var(--violet-700); box-shadow: var(--shadow-sm); }
 
 /* ---------- Tables ---------- */
 .table-wrap { overflow-x: auto; border: 2px solid var(--border); border-radius: var(--radius-md); }

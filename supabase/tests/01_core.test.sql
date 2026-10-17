@@ -137,12 +137,15 @@ select test.ok((:'again'::jsonb ->> 'certificateId') = (:'pass'::jsonb ->> 'cert
 select test.ok((select count(*) from public.certificates) = 1, 'exactly one certificate per course');
 select test.ok((select count(*) from public.xp_events where source_key = 'exam:c1-exam') = 1, 'exam XP awarded once');
 select test.ok((select count(*) from public.user_achievements where achievement_id in ('first_course', 'foundations', 'ten_lessons')) = 3, 'course achievements unlocked');
+select test.ok((select count(*) from public.user_achievements where achievement_id in ('start_c1', 'checkpoints_3', 'xp_100', 'correct_50', 'lessons_5')) = 5, 'data-driven achievements unlocked from server metrics');
+select test.ok(not exists (select 1 from public.user_achievements where achievement_id in ('start_c2', 'lessons_100', 'streak_365')), 'unearned achievements stay locked');
 
 select public.get_my_state() as st \gset
 select test.ok((:'st'::jsonb -> 'xp' ->> 'total')::int = (select sum(amount) from public.xp_events), 'state XP equals ledger');
 select test.ok(jsonb_array_length(:'st'::jsonb -> 'missions') = 6, 'six missions (3 daily, 3 weekly)');
 select test.ok((:'st'::jsonb -> 'assessments' -> 'c1-exam' ->> 'attempts')::int = 3, 'state aggregates attempts');
 select test.ok(not (:'st'::jsonb ? 'email'), 'state does not include email');
+select test.ok((:'st'::jsonb -> 'counters' ->> 'perfectLessons')::int >= 1 and (:'st'::jsonb -> 'counters') ? 'missions', 'state includes achievement counters');
 
 -- ======================================================= as Bob ========
 select test.login('b0000000-0000-4000-8000-000000000002');

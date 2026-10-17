@@ -16,7 +16,7 @@ All numbers live in `src/engine/rewards.ts` and are mirrored into the database b
 Replaying lessons, retaking passed assessments, refreshing, or repeating a request never re-awards XP (unique `source_key` + idempotent attempt ids).
 
 ## Levels
-Level L→L+1 costs `100 + 50 × (L − 1)` XP (level 2 at 100, 3 at 250, 4 at 450 …), up to level 60. Names: Curious Saver (1), Budget Builder (3), Market Explorer (5), Portfolio Apprentice (8), Company Analyst (12), Value Seeker (16), Market Strategist (21), Long-Term Thinker (28), Veleta Sage (36).
+Level L→L+1 costs `100 + 50 × (L − 1)` XP (level 2 at 100, 3 at 250, 4 at 450 …), up to level 100 (about 250,000 XP in total). 24 named ranks, from Curious Saver (1), Budget Builder (3) and Coin Collector (5) through Company Analyst (17), Market Strategist (36), Macro Thinker (50) and Capital Allocator (72) to Veleta Legend (92) and Veleta Grandmaster (100). The full list is `LEVEL_NAMES` in `src/engine/rewards.ts`.
 
 ## Daily goal and streaks
 - An **activity** is a completed lesson (including replays), revision session or assessment submission. Goals: 1, 2, 3 or 5 activities.
@@ -40,7 +40,9 @@ Level L→L+1 costs `100 + 50 × (L − 1)` XP (level 2 at 100, 3 at 250, 4 at 4
 Three daily missions (always “Complete 2 lessons” plus two rotating from: revision session, 15 correct first-time answers, a perfect lesson) and three weekly missions (8 lessons, goal met on 5 days, plus 4 revision sessions or a checkpoint pass), chosen deterministically from the date so they never reshuffle mid-day.
 
 ## Achievements
-First Lesson, First Perfect Quiz, Getting Serious (10 lessons), Half-Century (50), Seven-Day Streak, Thirty-Day Streak, Consistent Learner (goal met on 14 days), Checkpoint Ace, Revision Champion (10 sessions), First Course Completed, Financial Foundations Mastered, Company Analyst, Portfolio Builder, Valuation Explorer, Veleta Graduate (all 8), Study Buddy (first friend).
+Achievements are data: `ACHIEVEMENTS` in `src/engine/achievements.ts` defines each one as a metric plus a threshold (for example `lessons ≥ 50` or `streak ≥ 30`), with a category and a tier (bronze, silver, gold, platinum). `npm run content:sql` copies the definitions into `veleta_private.achievements`, and the server function `evaluate_achievements` unlocks any whose threshold is met, so the browser and database always agree.
+
+Series include lessons completed, perfect lessons, streak length, daily goals met, revision sessions, correct answers, mastered questions, checkpoints passed and aced, courses completed, total XP, levels reached, missions completed and friends, plus a “started” and a “completed” badge for every course. Adding a course adds its badges automatically.
 
 ## Leaderboards
 Friends-only: you plus accepted friends who allow it. **This week** = XP since Monday 00:00 UTC; **All time** = total XP. Only display name, username, avatar and XP are shown.

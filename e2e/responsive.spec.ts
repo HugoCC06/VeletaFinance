@@ -16,7 +16,7 @@ test('mobile: no horizontal overflow and bottom navigation works', async ({ page
   await completeOnboarding(page)
   await page.goto('#/app/lesson/c1-u1-l1')
   await playLesson(page)
-  for (const r of ['/app', '/app/learn/c1', '/app/practice', '/app/achievements', '/app/settings']) {
+  for (const r of ['/app', '/app/learn', '/app/learn/c1', '/app/practice', '/app/achievements', '/app/settings']) {
     await page.goto(`#${r}`)
     await page.waitForTimeout(400)
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), r).toBe(true)

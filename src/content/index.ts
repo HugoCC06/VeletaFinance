@@ -7,8 +7,13 @@ import { c5 } from './courses/c5-valuation'
 import { c6 } from './courses/c6-macro'
 import { c7 } from './courses/c7-dividends'
 import { c8 } from './courses/c8-trading'
+import { c9 } from './courses/c9-money'
+import { c10 } from './courses/c10-retirement'
+import { c11 } from './courses/c11-property'
+import { c12 } from './courses/c12-crypto'
+import { c13 } from './courses/c13-history'
 
-export const COURSES: Course[] = [c1, c2, c3, c4, c5, c6, c7, c8]
+export const COURSES: Course[] = [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13]
 
 interface LessonRef { course: Course; unit: Unit; lesson: Lesson; index: number }
 interface AssessmentRef { course: Course; unit?: Unit; assessment: Assessment }

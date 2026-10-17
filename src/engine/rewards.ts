@@ -15,7 +15,7 @@ export const XP = {
   weeklyMission: 50,
 } as const
 
-export const MAX_LEVEL = 60
+export const MAX_LEVEL = 100
 
 /** XP needed to go from `level` to `level + 1`. */
 export function levelCost(level: number): number {
@@ -28,16 +28,31 @@ export function xpForLevel(level: number): number {
   return 100 * n + 25 * n * (n - 1)
 }
 
-const LEVEL_NAMES: [number, string][] = [
+export const LEVEL_NAMES: [number, string][] = [
   [1, 'Curious Saver'],
   [3, 'Budget Builder'],
-  [5, 'Market Explorer'],
-  [8, 'Portfolio Apprentice'],
-  [12, 'Company Analyst'],
-  [16, 'Value Seeker'],
-  [21, 'Market Strategist'],
-  [28, 'Long-Term Thinker'],
-  [36, 'Veleta Sage'],
+  [5, 'Coin Collector'],
+  [7, 'Market Explorer'],
+  [9, 'Chart Reader'],
+  [11, 'Portfolio Apprentice'],
+  [14, 'Dividend Hunter'],
+  [17, 'Company Analyst'],
+  [20, 'Value Seeker'],
+  [24, 'Index Tracker'],
+  [28, 'Bond Scholar'],
+  [32, 'Risk Manager'],
+  [36, 'Market Strategist'],
+  [40, 'Compounding Pro'],
+  [45, 'Valuation Expert'],
+  [50, 'Macro Thinker'],
+  [55, 'Wealth Architect'],
+  [60, 'Long-Term Thinker'],
+  [66, 'Market Veteran'],
+  [72, 'Capital Allocator'],
+  [78, 'Investing Mentor'],
+  [85, 'Financial Sage'],
+  [92, 'Veleta Legend'],
+  [100, 'Veleta Grandmaster'],
 ]
 
 export function levelName(level: number): string {

@@ -35,8 +35,8 @@ It is a static React app deployed to **GitHub Pages**, with an optional **Supaba
 
 **Gamification**
 - XP from a central config, idempotent and recorded server-side; replays and duplicate requests can’t farm XP.
-- 60 levels with names; daily goals; streaks evaluated in the learner’s time zone; earned streak freezes.
-- 16 achievements; deterministic daily and weekly missions.
+- 100 levels with 24 named ranks; daily goals; streaks evaluated in the learner’s time zone; earned streak freezes.
+- 120+ achievements across six categories (learning, streaks, mastery, courses, milestones, social) in bronze, silver, gold and platinum tiers; deterministic daily and weekly missions.
 - Friends (search by username, requests, accept/decline/remove) and friends-only weekly/all-time leaderboards (online mode).
 
 **Accounts & privacy**
@@ -114,11 +114,12 @@ In GitHub, set these as **repository variables** (Settings → Secrets and varia
 Full guide: [docs/BACKEND.md](docs/BACKEND.md). In short:
 
 1. Create a Supabase project (free tier is fine to start).
-2. Apply the SQL in `supabase/migrations/` **in filename order** — either `supabase link --project-ref <ref> && supabase db push` with the Supabase CLI, or paste each file into the SQL editor.
+2. New project: paste `supabase/setup.sql` (all migrations combined) into the SQL editor and run it once. Or use the CLI: `supabase link --project-ref <ref> && supabase db push`.
 3. Auth → URL configuration: set **Site URL** to your deployed URL (e.g. `https://<user>.github.io/VeletaFinance/`) and add it (and `http://localhost:5173/VeletaFinance/` for development) to **Redirect URLs**.
 4. Auth → Providers → Email: enable email sign-ups; keep “Confirm email” on (recommended).
 5. Copy the project URL and anon key into `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`.
-6. Whenever lesson content or XP settings change, run `npm run content:sql` and apply the regenerated `..._content_seed.sql` (it upserts; it never deletes).
+6. Existing project created from an older `setup.sql`: run `supabase/update.sql` once in the SQL editor. It applies the newer migrations and the latest content, and is safe to run again.
+7. Whenever lesson content, achievements or XP settings change, run `npm run content:sql` and apply the regenerated `supabase/update.sql` (it upserts content and removes retired achievement definitions; it never deletes learner data).
 
 ## Testing
 

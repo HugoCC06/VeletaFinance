@@ -35,8 +35,8 @@ function AssessmentView({ assessmentId }: { assessmentId: string }) {
   const draftKey = `veleta.assess.${user?.id}.${assessmentId}`
   const questions = ref?.assessment.questions ?? []
   const saved = useMemo(() => readJSON<{ raw: RawAnswer[]; attemptId: string } | null>(draftKey, null), [draftKey])
-  const [raw, setRaw] = useState<RawAnswer[]>(() => (saved && saved.raw.length === questions.length ? saved.raw : questions.map(initialRaw)))
   const [attemptId, setAttemptId] = useState(() => saved?.attemptId ?? uuid())
+  const [raw, setRaw] = useState<RawAnswer[]>(() => (saved && saved.raw.length === questions.length ? saved.raw : questions.map((q) => initialRaw(q, attemptId))))
   const [pos, setPos] = useState(0)
   const [phase, setPhase] = useState<Phase>('intro')
   const [result, setResult] = useState<AssessmentResult | null>(null)
@@ -92,8 +92,9 @@ function AssessmentView({ assessmentId }: { assessmentId: string }) {
     }
   }
   const retake = () => {
-    setRaw(questions.map(initialRaw))
-    setAttemptId(uuid())
+    const id = uuid()
+    setRaw(questions.map((q) => initialRaw(q, id)))
+    setAttemptId(id)
     setPos(0)
     setResult(null)
     setPhase('answering')
@@ -135,7 +136,7 @@ function AssessmentView({ assessmentId }: { assessmentId: string }) {
           <span className="pill pill--violet">{pos + 1}/{questions.length}</span>
         </header>
         <div className="lesson__body container reading" key={q.id}>
-          <QuestionView question={q} value={raw[pos]} onChange={(v) => setRaw((r) => r.map((x, i) => (i === pos ? v : x)))} />
+          <QuestionView question={q} value={raw[pos]} onChange={(v) => setRaw((r) => r.map((x, i) => (i === pos ? v : x)))} seed={attemptId} />
         </div>
         <footer className="lesson__footer">
           <div className="container reading lesson__footer-inner cluster" style={{ flexWrap: 'nowrap' }}>

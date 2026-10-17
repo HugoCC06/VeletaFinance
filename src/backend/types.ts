@@ -98,7 +98,7 @@ export interface UserState {
   stats: QuestionStat[]
   certificates: CertificateRecord[]
   activity: DayActivity[]
-  counters: { revisionSessions: number; goalDays: number; friends: number }
+  counters: { revisionSessions: number; goalDays: number; friends: number; perfectLessons: number; perfectCheckpoints: number; missions: number }
 }
 
 export interface RewardSummary {

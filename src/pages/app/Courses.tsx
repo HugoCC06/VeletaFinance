@@ -17,7 +17,7 @@ export function Courses() {
     <div className="container page">
       <header className="page-header">
         <h1>Courses</h1>
-        <p>All eight courses are open. Progress counts every lesson, checkpoint and final exam; mastery reflects how well you retain each course’s material over time.</p>
+        <p>All {COURSES.length} courses are open. Progress counts every lesson, checkpoint and final exam; mastery reflects how well you retain each course’s material over time.</p>
       </header>
       <div className="grid-2">
         {COURSES.map((c, i) => {

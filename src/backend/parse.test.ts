@@ -20,9 +20,10 @@ describe('response parsing', () => {
 
 describe('client/server sync', () => {
   const sql = readFileSync(resolve(process.cwd(), 'supabase/migrations/20261016000002_functions.sql'), 'utf8')
-  const seed = readFileSync(resolve(process.cwd(), 'supabase/migrations/20261016000004_content_seed.sql'), 'utf8')
-  it('evaluates every achievement on the server', () => {
-    for (const a of ACHIEVEMENTS) expect(sql, a.id).toContain(`('${a.id}',`)
+  const seed = readFileSync(resolve(process.cwd(), 'supabase/migrations/20261017000006_content_seed.sql'), 'utf8')
+  it('seeds every achievement for the server to evaluate', () => {
+    for (const a of ACHIEVEMENTS) expect(seed, a.id).toContain(`('${a.id}', '${a.metric}', ${a.threshold},`)
+    expect(sql).toContain('evaluate_achievements')
   })
   it('seeds every XP setting', () => {
     for (const [k, v] of Object.entries(XP)) expect(seed).toContain(`('${k}', ${v})`)

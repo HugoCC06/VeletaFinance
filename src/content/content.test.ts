@@ -8,9 +8,9 @@ describe('curriculum', () => {
   it('passes structural validation', () => {
     expect(validateCurriculum(COURSES)).toEqual([])
   })
-  it('covers all eight subject areas with substantial content', () => {
-    expect(CURRICULUM_STATS.courses).toBe(8)
-    expect(CURRICULUM_STATS.lessons).toBeGreaterThanOrEqual(60)
+  it('covers all thirteen subject areas with substantial content', () => {
+    expect(CURRICULUM_STATS.courses).toBe(13)
+    expect(CURRICULUM_STATS.lessons).toBeGreaterThanOrEqual(100)
     for (const c of COURSES) expect(c.units.length).toBeGreaterThanOrEqual(3)
   })
   it('accepts every canonical answer', () => {

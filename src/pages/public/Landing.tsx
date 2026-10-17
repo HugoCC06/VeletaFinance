@@ -16,6 +16,8 @@ const DEMO_QID = 'c1-u1-l3.q1'
 
 function LiveQuestion() {
   const q = getQuestion(DEMO_QID)!.question
+  // A fresh random option order on every visit, reload and "Try again".
+  const [seed, setSeed] = useState(() => Math.random().toString(36).slice(2))
   const [raw, setRaw] = useState<RawAnswer>(initialRaw(q))
   const [result, setResult] = useState<boolean | null>(null)
   return (
@@ -24,14 +26,14 @@ function LiveQuestion() {
         <span className="pill pill--violet"><Icon name="play" size={14} />Try a real question</span>
         <span className="subtle">From “Inflation and purchasing power”</span>
       </div>
-      <QuestionView question={q} value={raw} onChange={setRaw} reveal={result !== null} headingLevel={3} />
+      <QuestionView question={q} value={raw} onChange={setRaw} reveal={result !== null} headingLevel={3} seed={seed} />
       {result === null ? (
         <Button variant="primary" block disabled={!isAnswered(q, raw)} onClick={() => setResult(gradeAnswer(q, normalise(q, raw)))}>Check</Button>
       ) : (
         <div className={`live-demo__feedback ${result ? 'is-correct' : 'is-wrong'}`} role="status">
           <strong>{result ? 'Correct!' : `Not quite — the answer is “${describeCorrect(q)}”.`}</strong>
           <p className="small mb-0">{q.explanation}</p>
-          <button type="button" className="link-btn small" onClick={() => { setRaw(initialRaw(q)); setResult(null) }}>Try again</button>
+          <button type="button" className="link-btn small" onClick={() => { setRaw(initialRaw(q)); setResult(null); setSeed(Math.random().toString(36).slice(2)) }}>Try again</button>
         </div>
       )}
     </div>
@@ -136,7 +138,7 @@ export function Landing() {
           <div className="section__head spread">
             <div>
               <span className="eyebrow">Curriculum</span>
-              <h2 id="curriculum-title" className="mb-0">Eight courses, beginner to advanced</h2>
+              <h2 id="curriculum-title" className="mb-0">{COURSES.length} courses, beginner to advanced</h2>
             </div>
             <LinkButton to="/curriculum" iconRight="arrowRight">Full curriculum</LinkButton>
           </div>

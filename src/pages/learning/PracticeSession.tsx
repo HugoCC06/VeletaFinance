@@ -44,7 +44,7 @@ function PracticeView() {
 
   const [attemptId] = useState(uuid)
   const [pos, setPos] = useState(0)
-  const [raw, setRaw] = useState<RawAnswer>(() => (questions[0] ? initialRaw(questions[0]) : null))
+  const [raw, setRaw] = useState<RawAnswer>(() => (questions[0] ? initialRaw(questions[0], attemptId) : null))
   const [checked, setChecked] = useState<boolean | null>(null)
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({})
   const [phase, setPhase] = useState<'playing' | 'submitting' | 'done' | 'offline' | 'error'>('playing')
@@ -94,7 +94,7 @@ function PracticeView() {
       return
     }
     setPos(pos + 1)
-    setRaw(initialRaw(questions[pos + 1]))
+    setRaw(initialRaw(questions[pos + 1], attemptId))
     setChecked(null)
   }
 
@@ -126,7 +126,7 @@ function PracticeView() {
         <span className="pill pill--sky"><Icon name="refresh" size={14} />Revision</span>
       </header>
       <div className="lesson__body container reading" key={q.id}>
-        <QuestionView question={q} value={raw} onChange={setRaw} reveal={checked !== null} onSubmit={check} />
+        <QuestionView question={q} value={raw} onChange={setRaw} reveal={checked !== null} onSubmit={check} seed={attemptId} />
       </div>
       {checked === null ? (
         <footer className="lesson__footer">

@@ -1,5 +1,5 @@
 /**
- * Generates supabase/migrations/20261016000004_content_seed.sql from the
+ * Generates supabase/migrations/20261017000006_content_seed.sql from the
  * TypeScript curriculum and game configuration, so the server grades answers
  * and awards XP from exactly the same source of truth as the app.
  *
@@ -12,9 +12,10 @@ import { COURSES } from '../src/content/index.ts'
 import { correctAnswer } from '../src/engine/grading.ts'
 import { XP } from '../src/engine/rewards.ts'
 import { DAILY_ROTATION, MISSION_TEMPLATES, WEEKLY_ROTATION } from '../src/engine/missions.ts'
+import { ACHIEVEMENTS } from '../src/engine/achievements.ts'
 import type { Question } from '../src/content/types.ts'
 
-const OUT = fileURLToPath(new URL('../supabase/migrations/20261016000004_content_seed.sql', import.meta.url))
+const OUT = fileURLToPath(new URL('../supabase/migrations/20261017000006_content_seed.sql', import.meta.url))
 
 const lit = (s: string) => `'${s.replace(/'/g, "''")}'`
 const num = (n: number) => (Number.isFinite(n) ? String(n) : 'null')
@@ -45,6 +46,9 @@ lines.push(
   [...DAILY_ROTATION.map((ids, i) => `  ('daily', ${i}, ${arr(ids)})`), ...WEEKLY_ROTATION.map((ids, i) => `  ('weekly', ${i}, ${arr(ids)})`)].join(',\n') + ';',
   '',
 )
+
+upsert('achievements', ['id', 'metric', 'threshold', 'course_id'], ACHIEVEMENTS.map((a) => [lit(a.id), lit(a.metric), num(a.threshold), a.courseId ? lit(a.courseId) : 'null']))
+lines.push(`delete from veleta_private.achievements where id not in (${ACHIEVEMENTS.map((a) => lit(a.id)).join(', ')});`, '')
 
 upsert('courses', ['id', 'title', 'pass_mark', 'position'], COURSES.map((c, i) => [lit(c.id), lit(c.title), num(c.passMark), num(i + 1)]))
 upsert('units', ['id', 'course_id', 'position', 'title'], COURSES.flatMap((c) => c.units.map((u, i) => [lit(u.id), lit(c.id), num(i + 1), lit(u.title)])))
@@ -87,6 +91,16 @@ const sql = lines.join('\n')
 /** supabase/setup.sql = every migration in order, for one-paste setup in the Supabase SQL editor. */
 const MIGRATIONS = fileURLToPath(new URL('../supabase/migrations/', import.meta.url))
 const SETUP = fileURLToPath(new URL('../supabase/setup.sql', import.meta.url))
+const UPDATE = fileURLToPath(new URL('../supabase/update.sql', import.meta.url))
+/** Migrations safe to re-run on a project created from an earlier setup.sql. */
+const REPEATABLE_FROM = '20261017000005'
+function updateBundle(seed: string) {
+  const parts = ['-- Veleta Finance: update an EXISTING database to the latest version.', '-- Paste into Supabase → SQL Editor → New query → Run. Safe to run more than once.', '']
+  for (const f of readdirSync(MIGRATIONS).filter((x) => x.endsWith('.sql') && x >= REPEATABLE_FROM).sort()) {
+    parts.push('', `-- ===== ${f} =====`, f.endsWith('_content_seed.sql') ? seed : readFileSync(MIGRATIONS + f, 'utf8'))
+  }
+  return parts.join('\n')
+}
 function bundle(seed: string) {
   const parts = ['-- Veleta Finance: complete database setup (all migrations in order).', '-- Paste this whole file into Supabase → SQL Editor → New query, then press Run. Run it ONCE.', '']
   for (const f of readdirSync(MIGRATIONS).filter((x) => x.endsWith('.sql')).sort()) {
@@ -98,8 +112,10 @@ function bundle(seed: string) {
 if (process.argv.includes('--check')) {
   let setup = ''
   try { setup = readFileSync(SETUP, 'utf8') } catch { /* missing */ }
-  if (setup !== bundle(sql)) {
-    console.error('supabase/setup.sql is out of date. Run `npm run content:sql` and commit the result.')
+  let update = ''
+  try { update = readFileSync(UPDATE, 'utf8') } catch { /* missing */ }
+  if (setup !== bundle(sql) || update !== updateBundle(sql)) {
+    console.error('supabase/setup.sql or update.sql is out of date. Run `npm run content:sql` and commit the result.')
     process.exit(1)
   }
   let current = ''
@@ -116,5 +132,6 @@ if (process.argv.includes('--check')) {
 } else {
   writeFileSync(OUT, sql)
   writeFileSync(SETUP, bundle(sql))
+  writeFileSync(UPDATE, updateBundle(sql))
   console.log(`Wrote ${OUT} (${qRows.length} questions).`)
 }

@@ -161,7 +161,7 @@ export function parseUserState(v: unknown, user: AuthUser): UserState {
       const x = obj(d)
       return { day: dayStr(x.day), xp: num(x.xp), activities: num(x.activities), goalMet: bool(x.goalMet) }
     }),
-    counters: { revisionSessions: num(c.revisionSessions), goalDays: num(c.goalDays), friends: num(c.friends) },
+    counters: { revisionSessions: num(c.revisionSessions), goalDays: num(c.goalDays), friends: num(c.friends), perfectLessons: num(c.perfectLessons), perfectCheckpoints: num(c.perfectCheckpoints), missions: num(c.missions) },
   }
 }
 

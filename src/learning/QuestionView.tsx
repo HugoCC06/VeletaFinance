@@ -4,7 +4,7 @@ import { seededOrder } from '../engine/grading'
 import { Icon } from '../components/Icon'
 import { RichText } from '../components/RichText'
 import { matchKey } from '../engine/grading'
-import { matchOptions, type RawAnswer } from './answers'
+import { initialRaw, matchOptions, type RawAnswer } from './answers'
 
 interface Props {
   question: Question
@@ -14,9 +14,11 @@ interface Props {
   reveal?: boolean
   onSubmit?: () => void
   headingLevel?: 2 | 3
+  /** Varies option order per attempt; the same seed always gives the same order. */
+  seed?: string
 }
 
-export function QuestionView({ question: q, value, onChange, reveal = false, onSubmit, headingLevel = 2 }: Props) {
+export function QuestionView({ question: q, value, onChange, reveal = false, onSubmit, headingLevel = 2, seed = '' }: Props) {
   const id = useId()
   const Heading = headingLevel === 2 ? 'h2' : 'h3'
   const promptId = `${id}-prompt`
@@ -26,17 +28,17 @@ export function QuestionView({ question: q, value, onChange, reveal = false, onS
       {q.scenario && <div className="question__scenario"><RichText text={q.scenario} /></div>}
       <Heading className="question__prompt" id={promptId}>{q.prompt}</Heading>
       {q.kind === 'multi' && <p className="subtle">Select all that apply.</p>}
-      <QuestionInput q={q} value={value} onChange={onChange} reveal={reveal} onSubmit={onSubmit} labelledBy={promptId} />
+      <QuestionInput q={q} value={value} onChange={onChange} reveal={reveal} onSubmit={onSubmit} labelledBy={promptId} seed={seed} />
     </div>
   )
 }
 
-function QuestionInput({ q, value, onChange, reveal, onSubmit, labelledBy }: { q: Question; value: RawAnswer; onChange: (v: RawAnswer) => void; reveal: boolean; onSubmit?: () => void; labelledBy: string }) {
+function QuestionInput({ q, value, onChange, reveal, onSubmit, labelledBy, seed }: { q: Question; value: RawAnswer; onChange: (v: RawAnswer) => void; reveal: boolean; onSubmit?: () => void; labelledBy: string; seed: string }) {
   const name = useId()
   switch (q.kind) {
     case 'mcq':
     case 'tf': {
-      const order = q.kind === 'tf' ? [0, 1] : seededOrder(q.options.length, q.id)
+      const order = q.kind === 'tf' ? [0, 1] : seededOrder(q.options.length, `${q.id}:${seed}`)
       return (
         <div role="radiogroup" aria-labelledby={labelledBy} className={`options${q.kind === 'tf' ? ' options--tf' : ''}`}>
           {order.map((i, n) => {
@@ -56,7 +58,7 @@ function QuestionInput({ q, value, onChange, reveal, onSubmit, labelledBy }: { q
       )
     }
     case 'multi': {
-      const order = seededOrder(q.options.length, q.id)
+      const order = seededOrder(q.options.length, `${q.id}:${seed}`)
       const sel = Array.isArray(value) ? (value as number[]) : []
       return (
         <div role="group" aria-labelledby={labelledBy} className="options">
@@ -103,7 +105,7 @@ function QuestionInput({ q, value, onChange, reveal, onSubmit, labelledBy }: { q
       )
     }
     case 'match': {
-      const opts = matchOptions(q)
+      const opts = matchOptions(q, seed)
       const key = matchKey(q.right)
       const vals = Array.isArray(value) ? (value as (number | null)[]) : q.left.map(() => null)
       return (
@@ -127,7 +129,7 @@ function QuestionInput({ q, value, onChange, reveal, onSubmit, labelledBy }: { q
       )
     }
     case 'order': {
-      const ord = Array.isArray(value) && value.length === q.items.length ? (value as number[]) : q.items.map((_, i) => i)
+      const ord = Array.isArray(value) && value.length === q.items.length ? (value as number[]) : (initialRaw(q, seed) as number[])
       const move = (from: number, to: number) => {
         if (to < 0 || to >= ord.length) return
         const next = [...ord]

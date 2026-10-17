@@ -8,7 +8,7 @@ test('Journey A: a new learner signs up, completes onboarding and their first le
   await expect(page.getByText('Demo mode:')).toBeVisible()
   await page.getByRole('link', { name: 'Explore the curriculum' }).first().click()
   await expect(page.getByRole('heading', { name: 'Everything you can learn on Veleta' })).toBeVisible()
-  await expect(page.locator('.curriculum-course')).toHaveCount(8)
+  await expect(page.locator('.curriculum-course')).toHaveCount(13)
 
   // 3–4. Create an account and onboard
   await signUp(page)

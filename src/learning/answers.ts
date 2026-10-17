@@ -5,7 +5,7 @@ import { formatNumber } from '../lib/format'
 /** What the learner has entered so far, before it is normalised for grading. */
 export type RawAnswer = number | null | number[] | string | (number | null)[]
 
-export function initialRaw(q: Question): RawAnswer {
+export function initialRaw(q: Question, seed = ''): RawAnswer {
   switch (q.kind) {
     case 'mcq':
     case 'tf':
@@ -18,7 +18,7 @@ export function initialRaw(q: Question): RawAnswer {
       return q.left.map(() => null)
     case 'order': {
       // Start from a shuffled order that is never already correct.
-      let o = seededOrder(q.items.length, q.id)
+      let o = seededOrder(q.items.length, `${q.id}:${seed}`)
       if (o.every((v, i) => v === i)) o = [...o.slice(1), o[0]]
       return o
     }
@@ -96,7 +96,7 @@ export function describeGiven(q: Question, a: AnswerValue | null | undefined): s
 }
 
 /** Distinct right-hand options for a match question (first index of each text). */
-export function matchOptions(q: Extract<Question, { kind: 'match' }>): { value: number; label: string }[] {
+export function matchOptions(q: Extract<Question, { kind: 'match' }>, seed = ''): { value: number; label: string }[] {
   const firsts = [...new Set(matchKey(q.right))]
-  return seededOrder(firsts.length, q.id + ':r').map((i) => ({ value: firsts[i], label: q.right[firsts[i]] }))
+  return seededOrder(firsts.length, `${q.id}:${seed}:r`).map((i) => ({ value: firsts[i], label: q.right[firsts[i]] }))
 }

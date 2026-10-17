@@ -69,7 +69,7 @@ export function LessonPlayer({ lesson, context, mode, draftKey, onSubmit, onQueu
   const question: Question | null = step?.kind === 'question' ? step.question : null
 
   // The answer always belongs to the current question; a new question starts from its own initial value.
-  const raw: RawAnswer = question && answer.qid === question.id ? answer.raw : question ? initialRaw(question) : null
+  const raw: RawAnswer = question && answer.qid === question.id ? answer.raw : question ? initialRaw(question, draft.attemptId) : null
   const setRaw = (v: RawAnswer) => setAnswer({ qid: question?.id ?? null, raw: v })
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export function LessonPlayer({ lesson, context, mode, draftKey, onSubmit, onQueu
         {question ? (
           <>
             {!isFirstView && <p className="pill pill--violet mb-0"><Icon name="refresh" size={14} />Try this one again</p>}
-            <QuestionView question={question} value={raw} onChange={setRaw} reveal={!!checked} onSubmit={check} />
+            <QuestionView question={question} value={raw} onChange={setRaw} reveal={!!checked} onSubmit={check} seed={draft.attemptId} />
           </>
         ) : (
           <StepView step={step as Exclude<typeof step, { kind: 'question' }>} />

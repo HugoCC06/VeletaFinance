@@ -27,7 +27,10 @@ Plans change. At the time of writing, third-party summaries of Supabase’s free
 1. `…01_schema.sql` — tables. Learner tables in `public`: `profiles`, `preferences`, `lesson_progress`, `assessment_attempts`, `question_stats`, `xp_events`, `daily_activity`, `streaks`, `streak_freeze_usage`, `user_achievements`, `mission_progress`, `learner_counters`, `certificates`, `friendships`. Private schema `veleta_private`: curriculum keys (`courses`, `units`, `lessons`, `assessments`, `questions`), `config` (XP), mission templates/rotation, `attempt_answers`, `processed_requests` (idempotency), `rate_events`.
 2. `…02_functions.sql` — grading, Leitner updates, XP, missions, streaks, achievements, unlock rules, the RPCs, social functions, certificate verification, account deletion and the new-user trigger.
 3. `…03_security.sql` — RLS on every table, least-privilege grants (read own rows; update only safe profile/preference columns), function execute grants.
-4. `…04_content_seed.sql` — **generated** by `npm run content:sql`; upserts curriculum keys and game config.
+4. `…05_round2.sql` — data-driven achievements (`veleta_private.achievements` + `evaluate_achievements`), extra learner counters, level cap 100.
+5. `…06_content_seed.sql` — **generated** by `npm run content:sql`; upserts curriculum keys, game config and achievement definitions.
+
+`supabase/setup.sql` is every migration combined (for a new project). `supabase/update.sql` contains only the migrations added since the first release plus the latest content; run it once on a project created from an older `setup.sql`. Both are generated; `update.sql` is safe to re-run.
 
 ### RPCs exposed to the browser
 
@@ -48,9 +51,10 @@ None in Veleta’s tables: every learner row references `profiles` with `ON DELE
 ## Setup steps
 
 1. **Create a project** at https://supabase.com (choose a region near your learners).
-2. **Apply migrations** in filename order:
-   - CLI: `npm i -g supabase` (or use `npx supabase`), `supabase login`, `supabase link --project-ref <ref>`, `supabase db push`.
-   - Or Dashboard → SQL Editor: paste and run each file in order.
+2. **Apply the database**:
+   - Easiest: Dashboard → SQL Editor → paste the whole of `supabase/setup.sql` → Run.
+   - Already set up from an older version? Paste `supabase/update.sql` instead (safe to run more than once).
+   - CLI alternative: `npx supabase login`, `npx supabase link --project-ref <ref>`, `npx supabase db push`.
 3. **Auth settings** (Dashboard → Authentication):
    - URL configuration → Site URL: `https://<user>.github.io/<repo>/` (or your custom domain, with trailing slash).
    - Redirect URLs: the same URL, plus `http://localhost:5173/<repo>/` for development. The app redirects to `<site>?next=onboarding` and `<site>?next=reset-password`, which match the base URL.

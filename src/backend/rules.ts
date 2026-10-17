@@ -168,15 +168,30 @@ class Tx {
 }
 
 export function achievementStats(r: LearnerRecord): AchievementStats {
+  const courseLessons: Record<string, number> = {}
+  for (const id of Object.keys(r.lessons)) {
+    const c = getLesson(id)?.course.id
+    if (c) courseLessons[c] = (courseLessons[c] ?? 0) + 1
+  }
+  const stats = Object.values(r.stats)
+  const passed = new Set(r.attempts.filter((a) => a.passed && getAssessment(a.assessmentId)?.assessment.kind === 'checkpoint').map((a) => a.assessmentId))
+  const coursesCompleted = r.certificates.filter((c) => !c.revoked).map((c) => c.courseId)
   return {
-    lessonsCompleted: Object.keys(r.lessons).length,
-    perfectLessons: r.counters.perfectLessons,
-    longestStreak: r.streak.longest,
-    coursesCompleted: r.certificates.filter((c) => !c.revoked).map((c) => c.courseId),
-    revisionSessions: r.counters.revisionSessions,
-    goalDays: Object.values(r.days).filter((d) => d.goalMet).length,
+    lessons: Object.keys(r.lessons).length,
+    perfect_lessons: r.counters.perfectLessons,
+    streak: r.streak.longest,
+    goal_days: Object.values(r.days).filter((d) => d.goalMet).length,
+    revisions: r.counters.revisionSessions,
     friends: r.counters.friends,
-    perfectCheckpoints: r.counters.perfectCheckpoints,
+    perfect_checkpoints: r.counters.perfectCheckpoints,
+    checkpoints: passed.size,
+    courses: coursesCompleted.length,
+    xp: totalXp(r),
+    missions: r.xpEvents.filter((e) => e.key.startsWith('mission:')).length,
+    correct: stats.reduce((n, s) => n + s.correct, 0),
+    mastered: stats.filter((s) => s.box >= 5).length,
+    coursesCompleted,
+    courseLessons,
   }
 }
 
@@ -386,7 +401,14 @@ export function buildState(r: LearnerRecord, now: Date): UserState {
     stats: Object.values(r.stats),
     certificates: r.certificates,
     activity,
-    counters: { revisionSessions: r.counters.revisionSessions, goalDays: Object.values(r.days).filter((d) => d.goalMet).length, friends: r.counters.friends },
+    counters: {
+      revisionSessions: r.counters.revisionSessions,
+      goalDays: Object.values(r.days).filter((d) => d.goalMet).length,
+      friends: r.counters.friends,
+      perfectLessons: r.counters.perfectLessons,
+      perfectCheckpoints: r.counters.perfectCheckpoints,
+      missions: r.xpEvents.filter((e) => e.key.startsWith('mission:')).length,
+    },
   }
 }
 

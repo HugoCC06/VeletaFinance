@@ -5,7 +5,7 @@ import { initialStreak, recordGoalMet, viewStreak, MAX_FREEZES } from './streak'
 import { buildRevisionQueue, masteryFor, updateStat, type QuestionStat } from './mastery'
 import { gradeAnswer, parseNumberInput, scoreAnswers, seededOrder } from './grading'
 import { applyMissionEvent, missionsFor } from './missions'
-import { newlyUnlocked, type AchievementStats } from './achievements'
+import { ACHIEVEMENTS, emptyStats, newlyUnlocked } from './achievements'
 import type { Question } from '../content/types'
 
 describe('dates', () => {
@@ -50,7 +50,7 @@ describe('levels', () => {
   })
   it('caps at the maximum level', () => {
     const info = levelInfo(10_000_000)
-    expect(info.level).toBe(60)
+    expect(info.level).toBe(100)
     expect(info.nextLevelXp).toBeNull()
     expect(info.progress).toBe(1)
   })
@@ -206,11 +206,21 @@ describe('missions', () => {
 })
 
 describe('achievements', () => {
-  const base: AchievementStats = { lessonsCompleted: 0, perfectLessons: 0, longestStreak: 0, coursesCompleted: [], revisionSessions: 0, goalDays: 0, friends: 0, perfectCheckpoints: 0 }
+  it('has many unique achievements with valid thresholds', () => {
+    expect(ACHIEVEMENTS.length).toBeGreaterThanOrEqual(100)
+    expect(new Set(ACHIEVEMENTS.map((a) => a.id)).size).toBe(ACHIEVEMENTS.length)
+    for (const a of ACHIEVEMENTS) {
+      expect(a.threshold, a.id).toBeGreaterThan(0)
+      expect(a.id).toMatch(/^[a-z0-9_]+$/)
+      expect(a.description.length, a.id).toBeGreaterThan(5)
+    }
+  })
   it('unlocks on thresholds and not twice', () => {
-    expect(newlyUnlocked(base, new Set())).toEqual([])
-    const s = { ...base, lessonsCompleted: 1, coursesCompleted: ['c1'] }
-    expect(newlyUnlocked(s, new Set())).toEqual(['first_lesson', 'first_course', 'foundations'])
+    expect(newlyUnlocked(emptyStats(), new Set())).toEqual([])
+    const s = { ...emptyStats(), lessons: 1, courses: 1, coursesCompleted: ['c1'], courseLessons: { c1: 1 } }
+    const got = newlyUnlocked(s, new Set())
+    expect(got).toEqual(expect.arrayContaining(['first_lesson', 'first_course', 'foundations', 'start_c1']))
+    expect(got).not.toContain('ten_lessons')
     expect(newlyUnlocked(s, new Set(['first_lesson']))).not.toContain('first_lesson')
   })
 })

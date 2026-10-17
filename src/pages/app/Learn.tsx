@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { COURSES, getCourse, lessonQuestions } from '../../content'
-import type { Lesson, Unit } from '../../content/types'
+import type { Course, Lesson, Unit } from '../../content/types'
 import { checkpointState, courseProgress, examState, lessonState, nextStep, type NodeState } from '../../engine/progression'
 import { daysBetween } from '../../engine/dates'
 import { masteryFor, masteryLabel } from '../../engine/mastery'
@@ -10,7 +10,7 @@ import { Icon, type IconName } from '../../components/Icon'
 import { EmptyState, LinkButton, ProgressBar } from '../../components/ui'
 import { Mascot } from '../../brand/Mascot'
 import { useApp } from '../../state/AppContext'
-import { currentCourse, snapshotFromState, statMap } from '../../state/selectors'
+import { courseMastery, currentCourse, snapshotFromState, statMap } from '../../state/selectors'
 import { useMeta } from '../../lib/useMeta'
 import { formatPercent } from '../../lib/format'
 
@@ -65,11 +65,121 @@ function PathNode({ id, state, isNext, icon, title, kindLabel, detail, href, act
   )
 }
 
+type HubFilter = 'all' | 'progress' | 'new' | 'done'
+const HUB_FILTERS: { id: HubFilter; label: string }[] = [
+  { id: 'all', label: 'All paths' },
+  { id: 'progress', label: 'In progress' },
+  { id: 'new', label: 'Not started' },
+  { id: 'done', label: 'Completed' },
+]
+
+function nextLabel(course: Course, step: ReturnType<typeof nextStep>) {
+  if (step.type === 'lesson') return { text: step.lesson.title, href: `/app/lesson/${step.lesson.id}`, kind: 'Next lesson' }
+  if (step.type === 'checkpoint') return { text: step.unit.checkpoint.title, href: `/app/assessment/${step.unit.checkpoint.id}`, kind: 'Unit checkpoint' }
+  if (step.type === 'exam') return { text: 'Final exam', href: `/app/assessment/${course.exam.id}`, kind: 'Ready for' }
+  return { text: 'Path complete', href: `/app/learn/${course.id}`, kind: 'Finished' }
+}
+
+/** /app/learn: every learning path as a card, with the current one featured. */
+function LearnHub() {
+  const { state } = useApp()
+  const [filter, setFilter] = useState<HubFilter>('all')
+  useMeta('Learn', { noindex: true })
+  if (!state) return null
+  const snap = snapshotFromState(state)
+  const current = currentCourse(state)
+  const cur = courseProgress(current, snap)
+  const curNext = nextLabel(current, nextStep(current, snap))
+  const lessonCount = (c: Course) => c.units.reduce((t, u) => t + u.lessons.length, 0)
+  const rows = COURSES.map((c, i) => ({ c, i, p: courseProgress(c, snap), m: courseMastery(state, c.id) }))
+  const shown = rows.filter(({ p }) => filter === 'all' || (filter === 'done' ? p.complete : filter === 'new' ? p.fraction === 0 : p.fraction > 0 && !p.complete))
+  const doneCount = rows.filter((r) => r.p.complete).length
+
+  return (
+    <div className="container page learn-hub">
+      <header className="page-header">
+        <span className="eyebrow">Learn</span>
+        <h1 className="mb-0">Your learning paths</h1>
+        <p className="muted">{COURSES.length} paths, all open. Keep going where you left off or jump into something new. Progress in every path is saved.</p>
+      </header>
+
+      <section className={`hub-current hub-current--${current.colour}`} aria-labelledby="hub-current-t">
+        <div className="hub-current__art" aria-hidden="true"><Icon name={current.icon} size={88} /></div>
+        <div className="hub-current__body">
+          <span className="hub-current__tag"><Icon name="flag" size={14} /> You are on this path</span>
+          <h2 id="hub-current-t" className="mb-0">{current.title}</h2>
+          <p className="mb-0">{current.tagline}</p>
+          <div className="hub-current__progress">
+            <div className="hub-current__bar" role="progressbar" aria-label={`${current.title} progress`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(cur.fraction * 100)}>
+              <span style={{ width: `${Math.round(cur.fraction * 100)}%` }} />
+            </div>
+            <span className="small bold">{Math.round(cur.fraction * 100)}% · {cur.lessonsDone}/{cur.lessonsTotal} lessons</span>
+          </div>
+          <p className="small mb-0"><span className="hub-current__kind">{curNext.kind}:</span> {curNext.text}</p>
+          <div className="hub-current__actions">
+            <Link to={curNext.href} className="btn hub-current__go">{cur.fraction > 0 ? 'Continue' : 'Start'} <Icon name="arrowRight" size={18} /></Link>
+            <Link to={`/app/learn/${current.id}`} className="btn hub-current__map"><Icon name="map" size={18} /> View path map</Link>
+          </div>
+        </div>
+      </section>
+
+      <div className="hub-toolbar">
+        <h2 className="mb-0">All paths <span className="muted small">· {doneCount}/{COURSES.length} completed</span></h2>
+        <div className="tabs" role="group" aria-label="Filter learning paths">
+          {HUB_FILTERS.map((f) => (
+            <button key={f.id} type="button" aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>{f.label}</button>
+          ))}
+        </div>
+      </div>
+
+      {shown.length === 0 ? (
+        <EmptyState title="No paths here yet" mood="think">Try another filter.</EmptyState>
+      ) : (
+        <ul className="hub-grid">
+          {shown.map(({ c, i, p, m }) => {
+            const isCurrent = c.id === current.id
+            const status = p.complete ? 'Completed' : p.fraction > 0 ? 'In progress' : 'Not started'
+            const pct = Math.round(p.fraction * 100)
+            return (
+              <li key={c.id}>
+                <Link to={`/app/learn/${c.id}`} className={`hub-card hub-card--${c.colour}${isCurrent ? ' is-current' : ''}`} aria-current={isCurrent ? 'true' : undefined}>
+                  <div className="hub-card__top">
+                    <span className="hub-card__icon" aria-hidden="true"><Icon name={c.icon} size={34} /></span>
+                    <span className="hub-card__ring" style={{ ['--pct' as string]: `${pct}` }} aria-hidden="true"><span>{p.complete ? <Icon name="check" size={18} /> : `${pct}%`}</span></span>
+                  </div>
+                  <span className="hub-card__num">Path {i + 1}{c.id === state.prefs.recommendedCourse ? ' · Recommended' : ''}</span>
+                  <h3 className="hub-card__title">{c.title}</h3>
+                  <p className="hub-card__tag">{c.tagline}</p>
+                  <div className="hub-card__meta">
+                    <span><Icon name="stack" size={14} /> {c.units.length} units</span>
+                    <span><Icon name="book" size={14} /> {lessonCount(c)} lessons</span>
+                    {p.fraction > 0 && <span title="Mastery from spaced revision"><Icon name="brain" size={14} /> {m}% {masteryLabel(m).toLowerCase()}</span>}
+                  </div>
+                  <div className="hub-card__foot">
+                    <span className={`pill ${p.complete ? 'pill--mint' : p.fraction > 0 ? 'pill--violet' : ''}`}>{status}</span>
+                    {isCurrent ? <span className="hub-card__here"><Icon name="flag" size={14} /> You're here</span> : <span className="hub-card__open">{p.fraction > 0 ? 'Resume' : 'Explore'} <Icon name="arrowRight" size={14} /></span>}
+                  </div>
+                  <span className="sr-only">{status}, {pct}% complete{isCurrent ? ', current path' : ''}</span>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 export function Learn() {
   const { courseId } = useParams()
+  if (!courseId) return <LearnHub />
+  return <CoursePath courseId={courseId} />
+}
+
+function CoursePath({ courseId }: { courseId: string }) {
   const { state } = useApp()
   const [open, setOpen] = useState<string | null>(null)
-  const course = courseId ? getCourse(courseId) : currentCourse(state)
+  const course = getCourse(courseId)
   useMeta(course ? `Learn: ${course.title}` : 'Learn', { noindex: true })
   if (!state) return null
   if (!course) return <div className="container page"><EmptyState title="Course not found" action={<LinkButton to="/app/courses" variant="primary">All courses</LinkButton>} /></div>
@@ -152,17 +262,10 @@ export function Learn() {
   const exRecord = state.assessments[course.exam.id]
   return (
     <div className="container page learn">
-      <nav className="course-switcher" aria-label="Choose course">
-        {COURSES.map((c) => (
-          <Link key={c.id} to={`/app/learn/${c.id}`} className={`course-switcher__item${c.id === course.id ? ' is-active' : ''}`} aria-current={c.id === course.id ? 'page' : undefined}>
-            <Icon name={c.icon} size={18} />
-            <span>{c.title}</span>
-          </Link>
-        ))}
-      </nav>
+      <Link to="/app/learn" className="learn__back"><Icon name="chevronLeft" size={16} /> All learning paths</Link>
       <header className="learn__head">
         <div>
-          <span className="eyebrow">Learning path</span>
+          <span className="eyebrow">Learning path {COURSES.findIndex((c) => c.id === course.id) + 1} of {COURSES.length}{course.id === currentCourse(state).id ? ' · You are here' : ''}</span>
           <h1 className="mb-0">{course.title}</h1>
           <p className="muted mb-0">{course.tagline}</p>
         </div>

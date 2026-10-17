@@ -45,6 +45,7 @@ export function Onboarding() {
   const [busy, setBusy] = useState(false)
   const questions = PLACEMENT.map((id) => getQuestion(id)?.question).filter((q): q is Question => !!q)
   const [correctSoFar, setCorrectSoFar] = useState(0)
+  const [seed] = useState(() => Math.random().toString(36).slice(2))
 
   useEffect(() => {
     if (state?.prefs.onboarded) navigate('/app', { replace: true })
@@ -180,7 +181,7 @@ export function Onboarding() {
           <section className="stack">
             <div className="spread"><h1 className="mb-0">Quick placement check</h1><span className="pill">{qIndex + 1} / {questions.length}</span></div>
             <p className="muted">Five optional questions to suggest a starting point. There’s no penalty for guessing — or skip it.</p>
-            {questions[qIndex] && raw !== undefined && <QuestionView key={questions[qIndex].id} question={questions[qIndex]} value={raw} onChange={setRaw} onSubmit={answerPlacement} />}
+            {questions[qIndex] && raw !== undefined && <QuestionView key={questions[qIndex].id} question={questions[qIndex]} value={raw} onChange={setRaw} onSubmit={answerPlacement} seed={seed} />}
             <div className="cluster">
               <Button onClick={() => { setPlacementSkipped(true); setStep(5) }}>Skip</Button>
               <Button variant="primary" onClick={answerPlacement} disabled={!questions[qIndex] || !isAnswered(questions[qIndex], raw)}>{qIndex + 1 < questions.length ? 'Next' : 'See my result'}</Button>
