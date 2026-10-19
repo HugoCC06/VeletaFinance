@@ -1,0 +1,13 @@
+{
+  "name": "Veleta Finance",
+  "short_name": "Veleta",
+  "description": "Learn to invest, one lesson at a time.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#F8F7FD",
+  "theme_color": "#6B4EFF",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
