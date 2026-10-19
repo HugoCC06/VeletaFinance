@@ -1418,3 +1418,17 @@ insert into veleta_private.questions (id, kind, lesson_id, assessment_id, answer
 on conflict (id) do update set kind = excluded.kind, lesson_id = excluded.lesson_id, assessment_id = excluded.assessment_id, answer = excluded.answer, tolerance = excluded.tolerance, concept = excluded.concept;
 
 commit;
+
+
+-- ===== 20261019000007_backfill_achievements.sql =====
+-- Award achievements already earned by existing learners. Achievements are
+-- otherwise only checked when a learner finishes something, so progress made
+-- before an achievement existed would stay locked until their next activity.
+-- Safe to re-run: evaluate_achievements only inserts missing rows.
+do $$
+declare p record;
+begin
+  for p in select id from public.profiles loop
+    perform veleta_private.evaluate_achievements(p.id);
+  end loop;
+end $$;

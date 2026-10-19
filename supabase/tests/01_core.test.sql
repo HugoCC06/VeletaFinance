@@ -140,6 +140,16 @@ select test.ok((select count(*) from public.user_achievements where achievement_
 select test.ok((select count(*) from public.user_achievements where achievement_id in ('start_c1', 'checkpoints_3', 'xp_100', 'correct_50', 'lessons_5')) = 5, 'data-driven achievements unlocked from server metrics');
 select test.ok(not exists (select 1 from public.user_achievements where achievement_id in ('start_c2', 'lessons_100', 'streak_365')), 'unearned achievements stay locked');
 
+-- Backfill: achievements earned before they existed are awarded by update.sql.
+reset role;
+select count(*) as ach_before from public.user_achievements \gset
+delete from public.user_achievements;
+\i supabase/migrations/20261019000007_backfill_achievements.sql
+select test.ok((select count(*) from public.user_achievements) = :ach_before, 'backfill re-awards every earned achievement');
+\i supabase/migrations/20261019000007_backfill_achievements.sql
+select test.ok((select count(*) from public.user_achievements) = :ach_before, 'backfill is safe to run twice');
+set role authenticated;
+
 select public.get_my_state() as st \gset
 select test.ok((:'st'::jsonb -> 'xp' ->> 'total')::int = (select sum(amount) from public.xp_events), 'state XP equals ledger');
 select test.ok(jsonb_array_length(:'st'::jsonb -> 'missions') = 6, 'six missions (3 daily, 3 weekly)');
