@@ -37,8 +37,7 @@ begin
   end if;
   return null;
 end $$;
-drop trigger if exists missions_on_xp on public.xp_events;
-create trigger missions_on_xp after insert on public.xp_events
+create or replace trigger missions_on_xp after insert on public.xp_events
   for each row execute function veleta_private.missions_on_xp();
 
 -- activities: lessons, revision sessions and assessments counted for the day.
@@ -51,8 +50,7 @@ begin
   end if;
   return null;
 end $$;
-drop trigger if exists missions_on_activity on public.daily_activity;
-create trigger missions_on_activity after insert or update of activities on public.daily_activity
+create or replace trigger missions_on_activity after insert or update of activities on public.daily_activity
   for each row execute function veleta_private.missions_on_activity();
 
 -- new_lessons: a lesson completed for the first time.
@@ -62,8 +60,7 @@ begin
   perform veleta_private.mission_event(new.user_id, veleta_private.user_today(new.user_id), 'new_lessons', 1);
   return null;
 end $$;
-drop trigger if exists missions_on_new_lesson on public.lesson_progress;
-create trigger missions_on_new_lesson after insert on public.lesson_progress
+create or replace trigger missions_on_new_lesson after insert on public.lesson_progress
   for each row execute function veleta_private.missions_on_new_lesson();
 
 revoke execute on function veleta_private.missions_on_xp() from public, anon, authenticated;
