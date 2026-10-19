@@ -53,6 +53,23 @@ describe('LocalBackend rules', () => {
     expect(after - before).toBe(r2.xpAwarded) // only mission XP, if any
   })
 
+  it('tracks XP, activity and new-lesson missions without counting mission XP', async () => {
+    const mission = async (id: string) => (await be.loadState()).missions.find((m) => m.templateId === id)!
+    now = new Date('2026-10-20T10:00:00Z') // daily set: complete a lesson, a perfect lesson, earn 30 XP
+    await be.submitLesson(allLessons[0].id, right(lessonQuestions(allLessons[0])), aid())
+    expect((await mission('d_lessons1')).completed).toBe(true)
+    expect((await mission('d_xp30')).progress).toBe(25) // 20 + 5 perfect bonus; the 2 × 15 mission XP is not counted
+    await be.submitLesson(allLessons[1].id, right(lessonQuestions(allLessons[1])), aid())
+    expect((await mission('d_xp30')).completed).toBe(true)
+    now = new Date('2026-10-21T10:00:00Z') // daily set: 2 activities, a new lesson, 10 correct
+    await be.submitLesson(allLessons[0].id, right(lessonQuestions(allLessons[0])), aid())
+    expect((await mission('d_new1')).progress).toBe(0) // a replay is not a new lesson
+    expect((await mission('d_activities2')).progress).toBe(1)
+    await be.submitLesson(allLessons[2].id, right(lessonQuestions(allLessons[2])), aid())
+    expect((await mission('d_new1')).completed).toBe(true)
+    expect((await mission('d_activities2')).completed).toBe(true)
+  })
+
   it('rejects locked lessons and incomplete submissions', async () => {
     await expect(be.submitLesson(allLessons[1].id, right(lessonQuestions(allLessons[1])), aid())).rejects.toMatchObject({ code: 'locked' })
     await expect(be.submitLesson(allLessons[0].id, {}, aid())).rejects.toBeInstanceOf(BackendError)

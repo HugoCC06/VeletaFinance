@@ -148,6 +148,22 @@ delete from public.user_achievements;
 select test.ok((select count(*) from public.user_achievements) = :ach_before, 'backfill re-awards every earned achievement');
 \i supabase/migrations/20261019000007_backfill_achievements.sql
 select test.ok((select count(*) from public.user_achievements) = :ach_before, 'backfill is safe to run twice');
+
+-- Missions: same rotation as missionsFor() in src/engine/missions.ts, and the
+-- xp / activities metrics are tracked by triggers (mission XP is not counted).
+select test.ok((select string_agg(template_id, ',' order by ord) from (select template_id, row_number() over () ord from veleta_private.current_missions('2024-01-02')) x)
+  = 'd_lessons1,d_perfect1,d_xp30,w_lessons8,w_goal5,w_revise4', 'mission rotation matches the app (day 1)');
+select test.ok((select string_agg(template_id, ',' order by ord) from (select template_id, row_number() over () ord from veleta_private.current_missions('2027-02-01')) x)
+  = 'd_goal1,d_new2,d_correct15,w_lessons5,w_goal3,w_checkpoint1', 'mission rotation matches the app (later week)');
+select veleta_private.award_xp('d0000000-0000-4000-8000-000000000004', 'test:xp1', 20, 'Test', '2024-01-02');
+select veleta_private.award_xp('d0000000-0000-4000-8000-000000000004', 'test:xp2', 15, 'Test', '2024-01-02');
+select test.ok((select completed from public.mission_progress where user_id = 'd0000000-0000-4000-8000-000000000004' and mission_key = 'daily:2024-01-02:d_xp30'), 'earning 35 XP completes the 30 XP mission');
+select test.ok((select count(*) from public.xp_events where user_id = 'd0000000-0000-4000-8000-000000000004' and source_key = 'mission:daily:2024-01-02:d_xp30') = 1, 'xp mission pays out once');
+select test.ok((select progress from public.mission_progress where user_id = 'd0000000-0000-4000-8000-000000000004' and mission_key = 'weekly:2024-01-01:w_xp300') is null, 'weekly XP mission only exists in weeks that include it');
+insert into public.daily_activity (user_id, day, activities) values ('d0000000-0000-4000-8000-000000000004', '2024-01-03', 1)
+  on conflict (user_id, day) do update set activities = public.daily_activity.activities + 1;
+update public.daily_activity set activities = activities + 1 where user_id = 'd0000000-0000-4000-8000-000000000004' and day = '2024-01-03';
+select test.ok((select completed from public.mission_progress where user_id = 'd0000000-0000-4000-8000-000000000004' and mission_key = 'daily:2024-01-03:d_activities2'), 'two activities complete the activities mission');
 set role authenticated;
 
 select public.get_my_state() as st \gset

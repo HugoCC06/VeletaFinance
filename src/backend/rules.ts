@@ -121,6 +121,7 @@ class Tx {
     const d = this.dayRow()
     d.xp += amount
     this.breakdown.push({ label, amount })
+    if (!key.startsWith('mission:')) this.mission({ xp: amount })
     return amount
   }
 
@@ -131,6 +132,7 @@ class Tx {
   activity() {
     const d = this.dayRow()
     d.activities += 1
+    this.mission({ activities: 1 })
     if (!d.goalMet && d.activities >= this.r.prefs.dailyGoal) {
       d.goalMet = true
       this.goalMetNow = true
@@ -240,6 +242,7 @@ export function processLesson(r: LearnerRecord, lessonId: string, answers: Recor
       ? { ...prev, completions: prev.completions + 1, bestAccuracy: Math.max(prev.bestAccuracy, accuracy) }
       : { lessonId, completedAt: now.toISOString(), firstAccuracy: accuracy, bestAccuracy: accuracy, completions: 1 }
     if (firstCompletion) {
+      tx.mission({ new_lessons: 1 })
       tx.award(`lesson:${lessonId}`, XP.lessonFirstCompletion, `Lesson: ${ref.lesson.title}`)
       if (perfect) tx.award(`lesson-perfect:${lessonId}`, XP.lessonPerfectBonus, 'Perfect first attempt')
     }

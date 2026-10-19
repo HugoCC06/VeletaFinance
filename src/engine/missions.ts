@@ -5,7 +5,13 @@
  */
 import { daysBetween, weekStart, type Day } from './dates'
 
-export type MissionMetric = 'lessons' | 'revisions' | 'correct' | 'perfect' | 'checkpoints' | 'goal_days'
+/**
+ * - lessons: lesson completions (replays count)
+ * - new_lessons: lessons completed for the first time
+ * - activities: lessons, revision sessions and assessments
+ * - xp: XP earned, not counting XP from missions themselves
+ */
+export type MissionMetric = 'lessons' | 'new_lessons' | 'revisions' | 'correct' | 'perfect' | 'checkpoints' | 'goal_days' | 'activities' | 'xp'
 
 export interface MissionTemplate {
   id: string
@@ -15,27 +21,81 @@ export interface MissionTemplate {
   title: string
 }
 
+const d = (id: string, metric: MissionMetric, target: number, title: string): MissionTemplate => ({ id, period: 'daily', metric, target, title })
+const w = (id: string, metric: MissionMetric, target: number, title: string): MissionTemplate => ({ id, period: 'weekly', metric, target, title })
+
 export const MISSION_TEMPLATES: MissionTemplate[] = [
-  { id: 'd_lessons2', period: 'daily', metric: 'lessons', target: 2, title: 'Complete 2 lessons' },
-  { id: 'd_revise1', period: 'daily', metric: 'revisions', target: 1, title: 'Finish a revision session' },
-  { id: 'd_correct15', period: 'daily', metric: 'correct', target: 15, title: 'Answer 15 questions right first time' },
-  { id: 'd_perfect1', period: 'daily', metric: 'perfect', target: 1, title: 'Finish a lesson with no mistakes' },
-  { id: 'w_lessons8', period: 'weekly', metric: 'lessons', target: 8, title: 'Complete 8 lessons this week' },
-  { id: 'w_revise4', period: 'weekly', metric: 'revisions', target: 4, title: 'Finish 4 revision sessions this week' },
-  { id: 'w_checkpoint1', period: 'weekly', metric: 'checkpoints', target: 1, title: 'Pass a unit checkpoint this week' },
-  { id: 'w_goal5', period: 'weekly', metric: 'goal_days', target: 5, title: 'Meet your daily goal on 5 days' },
+  d('d_lessons1', 'lessons', 1, 'Complete a lesson'),
+  d('d_lessons2', 'lessons', 2, 'Complete 2 lessons'),
+  d('d_lessons3', 'lessons', 3, 'Complete 3 lessons'),
+  d('d_new1', 'new_lessons', 1, 'Finish a lesson you haven’t done before'),
+  d('d_new2', 'new_lessons', 2, 'Finish 2 lessons you haven’t done before'),
+  d('d_revise1', 'revisions', 1, 'Finish a revision session'),
+  d('d_revise2', 'revisions', 2, 'Finish 2 revision sessions'),
+  d('d_correct10', 'correct', 10, 'Answer 10 questions right first time'),
+  d('d_correct15', 'correct', 15, 'Answer 15 questions right first time'),
+  d('d_correct25', 'correct', 25, 'Answer 25 questions right first time'),
+  d('d_perfect1', 'perfect', 1, 'Finish a lesson with no mistakes'),
+  d('d_perfect2', 'perfect', 2, 'Finish 2 lessons with no mistakes'),
+  d('d_activities2', 'activities', 2, 'Do 2 activities: lessons, revision or checkpoints'),
+  d('d_activities3', 'activities', 3, 'Do 3 activities: lessons, revision or checkpoints'),
+  d('d_xp30', 'xp', 30, 'Earn 30 XP'),
+  d('d_xp50', 'xp', 50, 'Earn 50 XP'),
+  d('d_goal1', 'goal_days', 1, 'Meet your daily goal'),
+
+  w('w_lessons5', 'lessons', 5, 'Complete 5 lessons this week'),
+  w('w_lessons8', 'lessons', 8, 'Complete 8 lessons this week'),
+  w('w_lessons12', 'lessons', 12, 'Complete 12 lessons this week'),
+  w('w_new4', 'new_lessons', 4, 'Finish 4 new lessons this week'),
+  w('w_new8', 'new_lessons', 8, 'Finish 8 new lessons this week'),
+  w('w_revise3', 'revisions', 3, 'Finish 3 revision sessions this week'),
+  w('w_revise4', 'revisions', 4, 'Finish 4 revision sessions this week'),
+  w('w_revise6', 'revisions', 6, 'Finish 6 revision sessions this week'),
+  w('w_checkpoint1', 'checkpoints', 1, 'Pass a unit checkpoint this week'),
+  w('w_checkpoint2', 'checkpoints', 2, 'Pass 2 unit checkpoints this week'),
+  w('w_goal3', 'goal_days', 3, 'Meet your daily goal on 3 days'),
+  w('w_goal5', 'goal_days', 5, 'Meet your daily goal on 5 days'),
+  w('w_goal7', 'goal_days', 7, 'Meet your daily goal every day this week'),
+  w('w_correct75', 'correct', 75, 'Answer 75 questions right first time this week'),
+  w('w_correct150', 'correct', 150, 'Answer 150 questions right first time this week'),
+  w('w_perfect3', 'perfect', 3, 'Finish 3 lessons with no mistakes this week'),
+  w('w_xp300', 'xp', 300, 'Earn 300 XP this week'),
+  w('w_xp600', 'xp', 600, 'Earn 600 XP this week'),
+  w('w_activities10', 'activities', 10, 'Do 10 activities this week'),
 ]
 
 const tpl = (id: string) => MISSION_TEMPLATES.find((t) => t.id === id)!
 
+/**
+ * One set per day, cycling every two weeks. Each set starts with an easy
+ * mission anyone can finish, then two different kinds of challenge.
+ */
 export const DAILY_ROTATION = [
   ['d_lessons2', 'd_revise1', 'd_correct15'],
-  ['d_lessons2', 'd_perfect1', 'd_revise1'],
-  ['d_lessons2', 'd_correct15', 'd_perfect1'],
+  ['d_lessons1', 'd_perfect1', 'd_xp30'],
+  ['d_activities2', 'd_new1', 'd_correct10'],
+  ['d_goal1', 'd_lessons3', 'd_perfect1'],
+  ['d_lessons1', 'd_revise1', 'd_xp50'],
+  ['d_activities2', 'd_correct25', 'd_new1'],
+  ['d_lessons2', 'd_perfect2', 'd_revise1'],
+  ['d_goal1', 'd_new2', 'd_correct15'],
+  ['d_lessons1', 'd_activities3', 'd_perfect1'],
+  ['d_activities2', 'd_revise2', 'd_xp30'],
+  ['d_lessons2', 'd_new1', 'd_correct25'],
+  ['d_goal1', 'd_perfect1', 'd_xp50'],
+  ['d_lessons1', 'd_correct10', 'd_revise1'],
+  ['d_activities2', 'd_lessons3', 'd_new1'],
 ]
+/** One set per week, cycling every eight weeks. */
 export const WEEKLY_ROTATION = [
   ['w_lessons8', 'w_goal5', 'w_revise4'],
-  ['w_lessons8', 'w_goal5', 'w_checkpoint1'],
+  ['w_lessons5', 'w_goal3', 'w_checkpoint1'],
+  ['w_new4', 'w_xp300', 'w_perfect3'],
+  ['w_lessons12', 'w_goal5', 'w_correct75'],
+  ['w_activities10', 'w_revise3', 'w_checkpoint1'],
+  ['w_new8', 'w_goal7', 'w_perfect3'],
+  ['w_lessons8', 'w_xp600', 'w_revise6'],
+  ['w_lessons5', 'w_correct150', 'w_checkpoint2'],
 ]
 
 const EPOCH = '2024-01-01' // a Monday
@@ -48,9 +108,11 @@ export interface MissionSlot {
 }
 
 export function missionsFor(today: Day): MissionSlot[] {
-  const dayIdx = ((daysBetween(EPOCH, today) % 3) + 3) % 3
+  const nd = DAILY_ROTATION.length
+  const nw = WEEKLY_ROTATION.length
+  const dayIdx = ((daysBetween(EPOCH, today) % nd) + nd) % nd
   const ws = weekStart(today)
-  const weekIdx = ((Math.floor(daysBetween(EPOCH, ws) / 7) % 2) + 2) % 2
+  const weekIdx = ((Math.floor(daysBetween(EPOCH, ws) / 7) % nw) + nw) % nw
   return [
     ...DAILY_ROTATION[dayIdx].map((id) => ({ key: `daily:${today}:${id}`, template: tpl(id), periodStart: today })),
     ...WEEKLY_ROTATION[weekIdx].map((id) => ({ key: `weekly:${ws}:${id}`, template: tpl(id), periodStart: ws })),

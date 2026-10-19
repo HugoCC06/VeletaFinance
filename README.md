@@ -36,7 +36,7 @@ It is a static React app deployed to **GitHub Pages**, with an optional **Supaba
 **Gamification**
 - XP from a central config, idempotent and recorded server-side; replays and duplicate requests can’t farm XP.
 - 100 levels with 24 named ranks; daily goals; streaks evaluated in the learner’s time zone; earned streak freezes.
-- 120+ achievements across six categories (learning, streaks, mastery, courses, milestones, social) in bronze, silver, gold and platinum tiers; deterministic daily and weekly missions.
+- 120+ achievements across six categories (learning, streaks, mastery, courses, milestones, social) in bronze, silver, gold and platinum tiers; 3 daily missions and 3 weekly goals drawn from 33 mission types, rotating over 14 days and 8 weeks.
 - Friends (search by username, requests, accept/decline/remove) and friends-only weekly/all-time leaderboards (online mode).
 
 **Accounts & privacy**

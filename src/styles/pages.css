@@ -95,7 +95,7 @@
 @media (max-width: 640px) { .dash-hero__mascot { position: absolute; right: -14px; bottom: -24px; opacity: 0.25; } }
 .dash-grid { display: grid; gap: var(--space-4); margin-top: var(--space-4); grid-template-columns: 1fr; }
 @media (min-width: 700px) { .dash-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 1200px) { .dash-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .dash-missions { grid-row: span 2; } }
+@media (min-width: 1200px) { .dash-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .streak-big { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-display); font-weight: 800; font-size: 2.4rem; color: var(--streak); line-height: 1; }
 .mission-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: var(--space-3); }
 .mission-list li { display: flex; gap: var(--space-3); align-items: flex-start; margin: 0; }
@@ -289,3 +289,5 @@ details summary { cursor: pointer; }
 .hub-card__foot { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); margin-top: var(--space-3); padding-top: var(--space-3); border-top: 2px dashed var(--border); }
 .hub-card__here { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 99px; background: var(--c-ink); color: var(--white); font-size: var(--text-xs); font-weight: 800; }
 .hub-card__open { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-sm); font-weight: 800; color: var(--c-ink); }
+.dash-missions--weekly { border-top: 4px solid var(--violet-400); }
+.dash-missions--daily { border-top: 4px solid var(--sky-500); }

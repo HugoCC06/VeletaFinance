@@ -3,7 +3,7 @@ import { COURSES } from '../../content'
 import { achievementById } from '../../engine/achievements'
 import { dueCount } from '../../engine/mastery'
 import { levelInfo } from '../../engine/rewards'
-import { addDays } from '../../engine/dates'
+import { addDays, daysBetween, weekStart } from '../../engine/dates'
 import { courseProgress } from '../../engine/progression'
 import { Mascot } from '../../brand/Mascot'
 import { Icon } from '../../components/Icon'
@@ -30,6 +30,7 @@ export function Dashboard() {
   const due = dueCount(state.stats, state.today)
   const recent = Object.entries(state.achievements).sort((a, b) => b[1].localeCompare(a[1])).slice(0, 3)
   const week = Array.from({ length: 7 }, (_, i) => addDays(state.today, i - 6))
+  const weekLeft = 7 - daysBetween(weekStart(state.today), state.today)
   const byDay = new Map(state.activity.map((a) => [a.day, a]))
   const maxXp = Math.max(20, ...week.map((d) => byDay.get(d)?.xp ?? 0))
   const started = COURSES.filter((c) => c.units.some((u) => u.lessons.some((l) => state.lessons[l.id])))
@@ -99,21 +100,34 @@ export function Dashboard() {
           <LinkButton to={due ? '/app/practice/session' : '/app/practice'} variant={due ? 'primary' : 'secondary'} size="sm">{due ? 'Start revision' : 'Open practice'}</LinkButton>
         </section>
 
-        <section className="card dash-missions" aria-labelledby="missions-title">
-          <h2 id="missions-title" className="card-title"><Icon name="flag" />Missions</h2>
-          <ul className="mission-list">
-            {state.missions.map((m) => (
-              <li key={m.key} className={m.completed ? 'is-done' : ''}>
-                <span className="mission-list__icon">{m.completed ? <Icon name="check" size={18} /> : <Icon name={m.period === 'daily' ? 'calendar' : 'star'} size={18} />}</span>
-                <div className="mission-list__body">
-                  <div className="spread"><span className="bold small">{m.title}</span><span className="pill pill--sun"><Icon name="bolt" size={12} />{m.xp}</span></div>
-                  <ProgressBar value={m.progress / m.target} label={m.title} size="sm" tone={m.completed ? 'mint' : 'sky'} valueText={`${m.progress} of ${m.target}${m.completed ? ', complete' : ''}`} />
-                  <span className="tiny muted">{m.period === 'daily' ? 'Today' : 'This week'} · {m.progress}/{m.target}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
+        {([
+          { period: 'daily', id: 'missions-title', title: 'Today’s missions', icon: 'flag', note: 'New missions tomorrow' },
+          { period: 'weekly', id: 'weekly-title', title: 'Weekly goals', icon: 'target', note: weekLeft === 1 ? 'Last day: new goals on Monday' : `${weekLeft} days left · new goals on Monday` },
+        ] as const).map((g) => {
+          const list = state.missions.filter((m) => m.period === g.period)
+          const done = list.filter((m) => m.completed).length
+          return (
+            <section key={g.period} className={`card dash-missions dash-missions--${g.period}`} aria-labelledby={g.id}>
+              <div className="spread">
+                <h2 id={g.id} className="card-title mb-0"><Icon name={g.icon} />{g.title}</h2>
+                <span className={`pill ${done === list.length && list.length ? 'pill--mint' : ''}`}>{done}/{list.length} done</span>
+              </div>
+              <p className="tiny muted">{g.note}</p>
+              <ul className="mission-list">
+                {list.map((m) => (
+                  <li key={m.key} className={m.completed ? 'is-done' : ''}>
+                    <span className="mission-list__icon">{m.completed ? <Icon name="check" size={18} /> : <Icon name={g.period === 'daily' ? 'calendar' : 'star'} size={18} />}</span>
+                    <div className="mission-list__body">
+                      <div className="spread"><span className="bold small">{m.title}</span><span className="pill pill--sun"><Icon name="bolt" size={12} />{m.xp}</span></div>
+                      <ProgressBar value={m.progress / m.target} label={m.title} size="sm" tone={m.completed ? 'mint' : g.period === 'daily' ? 'sky' : 'violet'} valueText={`${m.progress} of ${m.target}${m.completed ? ', complete' : ''}`} />
+                      <span className="tiny muted">{m.progress}/{m.target}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        })}
 
         <section className="card" aria-labelledby="week-title">
           <h2 id="week-title" className="card-title"><Icon name="chart" />This week</h2>

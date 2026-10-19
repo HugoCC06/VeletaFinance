@@ -15,23 +15,68 @@ insert into veleta_private.config (key, value) values
 on conflict (key) do update set value = excluded.value;
 
 insert into veleta_private.mission_templates (id, period, metric, target, title) values
+  ('d_lessons1', 'daily', 'lessons', 1, 'Complete a lesson'),
   ('d_lessons2', 'daily', 'lessons', 2, 'Complete 2 lessons'),
+  ('d_lessons3', 'daily', 'lessons', 3, 'Complete 3 lessons'),
+  ('d_new1', 'daily', 'new_lessons', 1, 'Finish a lesson you haven’t done before'),
+  ('d_new2', 'daily', 'new_lessons', 2, 'Finish 2 lessons you haven’t done before'),
   ('d_revise1', 'daily', 'revisions', 1, 'Finish a revision session'),
+  ('d_revise2', 'daily', 'revisions', 2, 'Finish 2 revision sessions'),
+  ('d_correct10', 'daily', 'correct', 10, 'Answer 10 questions right first time'),
   ('d_correct15', 'daily', 'correct', 15, 'Answer 15 questions right first time'),
+  ('d_correct25', 'daily', 'correct', 25, 'Answer 25 questions right first time'),
   ('d_perfect1', 'daily', 'perfect', 1, 'Finish a lesson with no mistakes'),
+  ('d_perfect2', 'daily', 'perfect', 2, 'Finish 2 lessons with no mistakes'),
+  ('d_activities2', 'daily', 'activities', 2, 'Do 2 activities: lessons, revision or checkpoints'),
+  ('d_activities3', 'daily', 'activities', 3, 'Do 3 activities: lessons, revision or checkpoints'),
+  ('d_xp30', 'daily', 'xp', 30, 'Earn 30 XP'),
+  ('d_xp50', 'daily', 'xp', 50, 'Earn 50 XP'),
+  ('d_goal1', 'daily', 'goal_days', 1, 'Meet your daily goal'),
+  ('w_lessons5', 'weekly', 'lessons', 5, 'Complete 5 lessons this week'),
   ('w_lessons8', 'weekly', 'lessons', 8, 'Complete 8 lessons this week'),
+  ('w_lessons12', 'weekly', 'lessons', 12, 'Complete 12 lessons this week'),
+  ('w_new4', 'weekly', 'new_lessons', 4, 'Finish 4 new lessons this week'),
+  ('w_new8', 'weekly', 'new_lessons', 8, 'Finish 8 new lessons this week'),
+  ('w_revise3', 'weekly', 'revisions', 3, 'Finish 3 revision sessions this week'),
   ('w_revise4', 'weekly', 'revisions', 4, 'Finish 4 revision sessions this week'),
+  ('w_revise6', 'weekly', 'revisions', 6, 'Finish 6 revision sessions this week'),
   ('w_checkpoint1', 'weekly', 'checkpoints', 1, 'Pass a unit checkpoint this week'),
-  ('w_goal5', 'weekly', 'goal_days', 5, 'Meet your daily goal on 5 days')
+  ('w_checkpoint2', 'weekly', 'checkpoints', 2, 'Pass 2 unit checkpoints this week'),
+  ('w_goal3', 'weekly', 'goal_days', 3, 'Meet your daily goal on 3 days'),
+  ('w_goal5', 'weekly', 'goal_days', 5, 'Meet your daily goal on 5 days'),
+  ('w_goal7', 'weekly', 'goal_days', 7, 'Meet your daily goal every day this week'),
+  ('w_correct75', 'weekly', 'correct', 75, 'Answer 75 questions right first time this week'),
+  ('w_correct150', 'weekly', 'correct', 150, 'Answer 150 questions right first time this week'),
+  ('w_perfect3', 'weekly', 'perfect', 3, 'Finish 3 lessons with no mistakes this week'),
+  ('w_xp300', 'weekly', 'xp', 300, 'Earn 300 XP this week'),
+  ('w_xp600', 'weekly', 'xp', 600, 'Earn 600 XP this week'),
+  ('w_activities10', 'weekly', 'activities', 10, 'Do 10 activities this week')
 on conflict (id) do update set period = excluded.period, metric = excluded.metric, target = excluded.target, title = excluded.title;
 
 delete from veleta_private.mission_rotation;
 insert into veleta_private.mission_rotation (period, idx, template_ids) values
   ('daily', 0, array['d_lessons2', 'd_revise1', 'd_correct15']::text[]),
-  ('daily', 1, array['d_lessons2', 'd_perfect1', 'd_revise1']::text[]),
-  ('daily', 2, array['d_lessons2', 'd_correct15', 'd_perfect1']::text[]),
+  ('daily', 1, array['d_lessons1', 'd_perfect1', 'd_xp30']::text[]),
+  ('daily', 2, array['d_activities2', 'd_new1', 'd_correct10']::text[]),
+  ('daily', 3, array['d_goal1', 'd_lessons3', 'd_perfect1']::text[]),
+  ('daily', 4, array['d_lessons1', 'd_revise1', 'd_xp50']::text[]),
+  ('daily', 5, array['d_activities2', 'd_correct25', 'd_new1']::text[]),
+  ('daily', 6, array['d_lessons2', 'd_perfect2', 'd_revise1']::text[]),
+  ('daily', 7, array['d_goal1', 'd_new2', 'd_correct15']::text[]),
+  ('daily', 8, array['d_lessons1', 'd_activities3', 'd_perfect1']::text[]),
+  ('daily', 9, array['d_activities2', 'd_revise2', 'd_xp30']::text[]),
+  ('daily', 10, array['d_lessons2', 'd_new1', 'd_correct25']::text[]),
+  ('daily', 11, array['d_goal1', 'd_perfect1', 'd_xp50']::text[]),
+  ('daily', 12, array['d_lessons1', 'd_correct10', 'd_revise1']::text[]),
+  ('daily', 13, array['d_activities2', 'd_lessons3', 'd_new1']::text[]),
   ('weekly', 0, array['w_lessons8', 'w_goal5', 'w_revise4']::text[]),
-  ('weekly', 1, array['w_lessons8', 'w_goal5', 'w_checkpoint1']::text[]);
+  ('weekly', 1, array['w_lessons5', 'w_goal3', 'w_checkpoint1']::text[]),
+  ('weekly', 2, array['w_new4', 'w_xp300', 'w_perfect3']::text[]),
+  ('weekly', 3, array['w_lessons12', 'w_goal5', 'w_correct75']::text[]),
+  ('weekly', 4, array['w_activities10', 'w_revise3', 'w_checkpoint1']::text[]),
+  ('weekly', 5, array['w_new8', 'w_goal7', 'w_perfect3']::text[]),
+  ('weekly', 6, array['w_lessons8', 'w_xp600', 'w_revise6']::text[]),
+  ('weekly', 7, array['w_lessons5', 'w_correct150', 'w_checkpoint2']::text[]);
 
 insert into veleta_private.achievements (id, metric, threshold, course_id) values
   ('first_lesson', 'lessons', 1, null),

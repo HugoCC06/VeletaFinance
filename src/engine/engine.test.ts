@@ -4,7 +4,7 @@ import { levelInfo, xpForLevel, levelCost } from './rewards'
 import { initialStreak, recordGoalMet, viewStreak, MAX_FREEZES } from './streak'
 import { buildRevisionQueue, masteryFor, updateStat, type QuestionStat } from './mastery'
 import { gradeAnswer, parseNumberInput, scoreAnswers, seededOrder } from './grading'
-import { applyMissionEvent, missionsFor } from './missions'
+import { applyMissionEvent, DAILY_ROTATION, MISSION_TEMPLATES, missionsFor, WEEKLY_ROTATION } from './missions'
 import { ACHIEVEMENTS, emptyStats, newlyUnlocked } from './achievements'
 import type { Question } from '../content/types'
 
@@ -194,7 +194,7 @@ describe('missions', () => {
     expect(missionsFor('2026-10-17').map((m) => m.key)).not.toEqual(a)
   })
   it('advances, caps and completes once', () => {
-    const day = '2026-10-16'
+    const day = '2024-01-01' // first set in the rotation: d_lessons2, d_revise1, d_correct15
     let r = applyMissionEvent(day, {}, { lessons: 1 })
     expect(r.completed).toHaveLength(0)
     r = applyMissionEvent(day, r.next, { lessons: 1 })
@@ -202,6 +202,34 @@ describe('missions', () => {
     const again = applyMissionEvent(day, r.next, { lessons: 5 })
     expect(again.completed.map((c) => c.template.id)).not.toContain('d_lessons2')
     expect(again.next[`daily:${day}:d_lessons2`].progress).toBe(2)
+  })
+})
+
+describe('mission variety', () => {
+  const ids = new Set(MISSION_TEMPLATES.map((t) => t.id))
+  it('has a large pool of valid, unique templates', () => {
+    expect(MISSION_TEMPLATES.length).toBeGreaterThanOrEqual(30)
+    expect(ids.size).toBe(MISSION_TEMPLATES.length)
+  })
+  it('builds every rotation from three different kinds of mission of the right period', () => {
+    for (const [rot, period] of [[DAILY_ROTATION, 'daily'], [WEEKLY_ROTATION, 'weekly']] as const) {
+      for (const set of rot) {
+        expect(set).toHaveLength(3)
+        const ts = set.map((id) => MISSION_TEMPLATES.find((t) => t.id === id)!)
+        expect(ts.every((t) => t && t.period === period), set.join()).toBe(true)
+        expect(new Set(ts.map((t) => t.metric)).size, set.join()).toBe(3)
+      }
+    }
+  })
+  it('uses every template and does not repeat a daily set for two weeks', () => {
+    const used = new Set([...DAILY_ROTATION, ...WEEKLY_ROTATION].flat())
+    expect([...ids].filter((id) => !used.has(id))).toEqual([])
+    const days = Array.from({ length: 14 }, (_, i) => missionsFor(addDays('2026-10-19', i)).filter((m) => m.template.period === 'daily').map((m) => m.template.id).join())
+    expect(new Set(days).size).toBe(14)
+  })
+  it('changes the weekly goals every week', () => {
+    const weeks = Array.from({ length: 8 }, (_, i) => missionsFor(addDays('2026-10-19', i * 7)).filter((m) => m.template.period === 'weekly').map((m) => m.template.id).join())
+    expect(new Set(weeks).size).toBe(8)
   })
 })
 

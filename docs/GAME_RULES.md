@@ -37,7 +37,11 @@ Level L→L+1 costs `100 + 50 × (L − 1)` XP (level 2 at 100, 3 at 250, 4 at 4
 - Course/concept mastery = average box weight (0, 40, 60, 75, 90, 100%) across **all** its lesson questions, unseen counting as 0. Labels: Started, Learned (40%+), Strong (70%+), Mastered (90%+).
 
 ## Missions
-Three daily missions (always “Complete 2 lessons” plus two rotating from: revision session, 15 correct first-time answers, a perfect lesson) and three weekly missions (8 lessons, goal met on 5 days, plus 4 revision sessions or a checkpoint pass), chosen deterministically from the date so they never reshuffle mid-day.
+Every day brings three **daily missions** (15 XP each) and every Monday three **weekly goals** (50 XP each). They are picked from 33 mission templates (`MISSION_TEMPLATES` in `src/engine/missions.ts`):
+- Daily sets cycle every **14 days**. Each starts with an easy mission anyone can finish (complete a lesson, do 2 activities, meet your daily goal), followed by two different kinds of challenge.
+- Weekly sets cycle every **8 weeks**, mixing volume (5–12 lessons, 10 activities), consistency (goal met on 3, 5 or 7 days), revision, checkpoints, accuracy and XP targets.
+- Mission types: lessons completed, **new** lessons (first completions only), revision sessions, correct first-time answers, perfect lessons, checkpoints passed, daily goal met, activities (lessons, revision or assessments) and XP earned. XP paid out by missions does not count towards XP missions.
+- Missions are chosen from the date, so they never reshuffle during a day or week.
 
 ## Achievements
 Achievements are data: `ACHIEVEMENTS` in `src/engine/achievements.ts` defines each one as a metric plus a threshold (for example `lessons ≥ 50` or `streak ≥ 30`), with a category and a tier (bronze, silver, gold, platinum). `npm run content:sql` copies the definitions into `veleta_private.achievements`, and the server function `evaluate_achievements` unlocks any whose threshold is met, so the browser and database always agree.

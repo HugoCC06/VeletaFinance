@@ -1281,23 +1281,68 @@ insert into veleta_private.config (key, value) values
 on conflict (key) do update set value = excluded.value;
 
 insert into veleta_private.mission_templates (id, period, metric, target, title) values
+  ('d_lessons1', 'daily', 'lessons', 1, 'Complete a lesson'),
   ('d_lessons2', 'daily', 'lessons', 2, 'Complete 2 lessons'),
+  ('d_lessons3', 'daily', 'lessons', 3, 'Complete 3 lessons'),
+  ('d_new1', 'daily', 'new_lessons', 1, 'Finish a lesson you haven’t done before'),
+  ('d_new2', 'daily', 'new_lessons', 2, 'Finish 2 lessons you haven’t done before'),
   ('d_revise1', 'daily', 'revisions', 1, 'Finish a revision session'),
+  ('d_revise2', 'daily', 'revisions', 2, 'Finish 2 revision sessions'),
+  ('d_correct10', 'daily', 'correct', 10, 'Answer 10 questions right first time'),
   ('d_correct15', 'daily', 'correct', 15, 'Answer 15 questions right first time'),
+  ('d_correct25', 'daily', 'correct', 25, 'Answer 25 questions right first time'),
   ('d_perfect1', 'daily', 'perfect', 1, 'Finish a lesson with no mistakes'),
+  ('d_perfect2', 'daily', 'perfect', 2, 'Finish 2 lessons with no mistakes'),
+  ('d_activities2', 'daily', 'activities', 2, 'Do 2 activities: lessons, revision or checkpoints'),
+  ('d_activities3', 'daily', 'activities', 3, 'Do 3 activities: lessons, revision or checkpoints'),
+  ('d_xp30', 'daily', 'xp', 30, 'Earn 30 XP'),
+  ('d_xp50', 'daily', 'xp', 50, 'Earn 50 XP'),
+  ('d_goal1', 'daily', 'goal_days', 1, 'Meet your daily goal'),
+  ('w_lessons5', 'weekly', 'lessons', 5, 'Complete 5 lessons this week'),
   ('w_lessons8', 'weekly', 'lessons', 8, 'Complete 8 lessons this week'),
+  ('w_lessons12', 'weekly', 'lessons', 12, 'Complete 12 lessons this week'),
+  ('w_new4', 'weekly', 'new_lessons', 4, 'Finish 4 new lessons this week'),
+  ('w_new8', 'weekly', 'new_lessons', 8, 'Finish 8 new lessons this week'),
+  ('w_revise3', 'weekly', 'revisions', 3, 'Finish 3 revision sessions this week'),
   ('w_revise4', 'weekly', 'revisions', 4, 'Finish 4 revision sessions this week'),
+  ('w_revise6', 'weekly', 'revisions', 6, 'Finish 6 revision sessions this week'),
   ('w_checkpoint1', 'weekly', 'checkpoints', 1, 'Pass a unit checkpoint this week'),
-  ('w_goal5', 'weekly', 'goal_days', 5, 'Meet your daily goal on 5 days')
+  ('w_checkpoint2', 'weekly', 'checkpoints', 2, 'Pass 2 unit checkpoints this week'),
+  ('w_goal3', 'weekly', 'goal_days', 3, 'Meet your daily goal on 3 days'),
+  ('w_goal5', 'weekly', 'goal_days', 5, 'Meet your daily goal on 5 days'),
+  ('w_goal7', 'weekly', 'goal_days', 7, 'Meet your daily goal every day this week'),
+  ('w_correct75', 'weekly', 'correct', 75, 'Answer 75 questions right first time this week'),
+  ('w_correct150', 'weekly', 'correct', 150, 'Answer 150 questions right first time this week'),
+  ('w_perfect3', 'weekly', 'perfect', 3, 'Finish 3 lessons with no mistakes this week'),
+  ('w_xp300', 'weekly', 'xp', 300, 'Earn 300 XP this week'),
+  ('w_xp600', 'weekly', 'xp', 600, 'Earn 600 XP this week'),
+  ('w_activities10', 'weekly', 'activities', 10, 'Do 10 activities this week')
 on conflict (id) do update set period = excluded.period, metric = excluded.metric, target = excluded.target, title = excluded.title;
 
 delete from veleta_private.mission_rotation;
 insert into veleta_private.mission_rotation (period, idx, template_ids) values
   ('daily', 0, array['d_lessons2', 'd_revise1', 'd_correct15']::text[]),
-  ('daily', 1, array['d_lessons2', 'd_perfect1', 'd_revise1']::text[]),
-  ('daily', 2, array['d_lessons2', 'd_correct15', 'd_perfect1']::text[]),
+  ('daily', 1, array['d_lessons1', 'd_perfect1', 'd_xp30']::text[]),
+  ('daily', 2, array['d_activities2', 'd_new1', 'd_correct10']::text[]),
+  ('daily', 3, array['d_goal1', 'd_lessons3', 'd_perfect1']::text[]),
+  ('daily', 4, array['d_lessons1', 'd_revise1', 'd_xp50']::text[]),
+  ('daily', 5, array['d_activities2', 'd_correct25', 'd_new1']::text[]),
+  ('daily', 6, array['d_lessons2', 'd_perfect2', 'd_revise1']::text[]),
+  ('daily', 7, array['d_goal1', 'd_new2', 'd_correct15']::text[]),
+  ('daily', 8, array['d_lessons1', 'd_activities3', 'd_perfect1']::text[]),
+  ('daily', 9, array['d_activities2', 'd_revise2', 'd_xp30']::text[]),
+  ('daily', 10, array['d_lessons2', 'd_new1', 'd_correct25']::text[]),
+  ('daily', 11, array['d_goal1', 'd_perfect1', 'd_xp50']::text[]),
+  ('daily', 12, array['d_lessons1', 'd_correct10', 'd_revise1']::text[]),
+  ('daily', 13, array['d_activities2', 'd_lessons3', 'd_new1']::text[]),
   ('weekly', 0, array['w_lessons8', 'w_goal5', 'w_revise4']::text[]),
-  ('weekly', 1, array['w_lessons8', 'w_goal5', 'w_checkpoint1']::text[]);
+  ('weekly', 1, array['w_lessons5', 'w_goal3', 'w_checkpoint1']::text[]),
+  ('weekly', 2, array['w_new4', 'w_xp300', 'w_perfect3']::text[]),
+  ('weekly', 3, array['w_lessons12', 'w_goal5', 'w_correct75']::text[]),
+  ('weekly', 4, array['w_activities10', 'w_revise3', 'w_checkpoint1']::text[]),
+  ('weekly', 5, array['w_new8', 'w_goal7', 'w_perfect3']::text[]),
+  ('weekly', 6, array['w_lessons8', 'w_xp600', 'w_revise6']::text[]),
+  ('weekly', 7, array['w_lessons5', 'w_correct150', 'w_checkpoint2']::text[]);
 
 insert into veleta_private.achievements (id, metric, threshold, course_id) values
   ('first_lesson', 'lessons', 1, null),
@@ -2557,3 +2602,77 @@ begin
     perform veleta_private.evaluate_achievements(p.id);
   end loop;
 end $$;
+
+
+-- ===== 20261019000008_mission_variety.sql =====
+-- Veleta Finance — more varied missions. Safe to re-run.
+-- Rotations now cycle through however many sets the content seed defines, and
+-- three new mission metrics are tracked with triggers so the submit functions
+-- stay unchanged. Mirrors src/engine/missions.ts and Tx in src/backend/rules.ts.
+
+create or replace function veleta_private.current_missions(p_day date)
+returns table (mission_key text, template_id text, period text, metric text, target int, title text)
+language sql stable set search_path = '' as $$
+  with n as (
+    select greatest(1, count(*) filter (where period = 'daily'))::int as nd,
+           greatest(1, count(*) filter (where period = 'weekly'))::int as nw
+    from veleta_private.mission_rotation
+  ), idx as (
+    select ((p_day - date '2024-01-01') % n.nd + n.nd) % n.nd as d,
+           (((veleta_private.week_start(p_day) - date '2024-01-01') / 7) % n.nw + n.nw) % n.nw as w
+    from n
+  ), slots as (
+    select 'daily:' || to_char(p_day, 'YYYY-MM-DD') || ':' || t.tid as mission_key, t.tid, t.ord, 0 as grp
+    from idx, veleta_private.mission_rotation r, unnest(r.template_ids) with ordinality as t(tid, ord)
+    where r.period = 'daily' and r.idx = idx.d
+    union all
+    select 'weekly:' || to_char(veleta_private.week_start(p_day), 'YYYY-MM-DD') || ':' || t.tid, t.tid, t.ord, 1
+    from idx, veleta_private.mission_rotation r, unnest(r.template_ids) with ordinality as t(tid, ord)
+    where r.period = 'weekly' and r.idx = idx.w
+  )
+  select s.mission_key, m.id, m.period, m.metric, m.target, m.title
+  from slots s join veleta_private.mission_templates m on m.id = s.tid
+  order by s.grp, s.ord
+$$;
+
+-- xp: XP earned, except XP paid out by missions themselves.
+create or replace function veleta_private.missions_on_xp() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  if new.source_key not like 'mission:%' then
+    perform veleta_private.mission_event(new.user_id, new.day, 'xp', new.amount);
+  end if;
+  return null;
+end $$;
+drop trigger if exists missions_on_xp on public.xp_events;
+create trigger missions_on_xp after insert on public.xp_events
+  for each row execute function veleta_private.missions_on_xp();
+
+-- activities: lessons, revision sessions and assessments counted for the day.
+create or replace function veleta_private.missions_on_activity() returns trigger
+language plpgsql security definer set search_path = '' as $$
+declare v_inc int := new.activities - (case when tg_op = 'UPDATE' then old.activities else 0 end);
+begin
+  if v_inc > 0 then
+    perform veleta_private.mission_event(new.user_id, new.day, 'activities', v_inc);
+  end if;
+  return null;
+end $$;
+drop trigger if exists missions_on_activity on public.daily_activity;
+create trigger missions_on_activity after insert or update of activities on public.daily_activity
+  for each row execute function veleta_private.missions_on_activity();
+
+-- new_lessons: a lesson completed for the first time.
+create or replace function veleta_private.missions_on_new_lesson() returns trigger
+language plpgsql security definer set search_path = '' as $$
+begin
+  perform veleta_private.mission_event(new.user_id, veleta_private.user_today(new.user_id), 'new_lessons', 1);
+  return null;
+end $$;
+drop trigger if exists missions_on_new_lesson on public.lesson_progress;
+create trigger missions_on_new_lesson after insert on public.lesson_progress
+  for each row execute function veleta_private.missions_on_new_lesson();
+
+revoke execute on function veleta_private.missions_on_xp() from public, anon, authenticated;
+revoke execute on function veleta_private.missions_on_activity() from public, anon, authenticated;
+revoke execute on function veleta_private.missions_on_new_lesson() from public, anon, authenticated;
